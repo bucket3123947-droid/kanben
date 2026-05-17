@@ -409,6 +409,20 @@
         return Array.isArray(question.yomi) ? question.yomi.join(' / ') : question.yomi;
       };
 
+      const getEffectiveMissCount = (id) => {
+        const record = history[id];
+        if (!record) return 0;
+        return Math.max(record.missCount, record.status === 'incorrect' ? 1 : 0);
+      };
+
+      const getMissBadgeClass = (count) => {
+        if (count >= 5) return 'bg-red-900 border-red-950 text-white';
+        if (count >= 4) return 'bg-red-800 border-red-900 text-white';
+        if (count >= 3) return 'bg-red-700 border-red-800 text-white';
+        if (count >= 2) return 'bg-red-500 border-red-600 text-white';
+        return 'bg-red-100 border-red-300 text-red-800';
+      };
+
       const moveToNextQuestion = (currentHistory) => {
         setResult(null);
         setShowAnswer(false);
@@ -662,23 +676,9 @@
           return true;
         };
 
-        const getEffectiveMissCount = (id) => {
-          const record = history[id];
-          if (!record) return 0;
-          return Math.max(record.missCount, record.status === 'incorrect' ? 1 : 0);
-        };
-
         const sortByMissCount = (list) => {
           if (filterTab !== 'incorrect') return list;
           return [...list].sort((a, b) => getEffectiveMissCount(b.id) - getEffectiveMissCount(a.id));
-        };
-
-        const getMissBadgeClass = (count) => {
-          if (count >= 5) return 'bg-red-900 border-red-950 text-white';
-          if (count >= 4) return 'bg-red-800 border-red-900 text-white';
-          if (count >= 3) return 'bg-red-700 border-red-800 text-white';
-          if (count >= 2) return 'bg-red-500 border-red-600 text-white';
-          return 'bg-red-100 border-red-300 text-red-800';
         };
 
         const filteredWriting = sortByMissCount(writingData.filter(filterFunc));
@@ -851,6 +851,15 @@
 
                 {!currentQuestion ? renderAllClear() : (
                   <div className="p-6 md:p-10 flex flex-col items-center min-h-[500px] relative animate-fade-in">
+                    {(() => {
+                      const miss = getEffectiveMissCount(currentQuestion.id);
+                      return miss > 0 ? (
+                        <span className={`absolute bottom-4 right-4 md:bottom-6 md:right-6 z-20 text-[10px] font-bold px-2 py-1 rounded shadow-sm border pointer-events-none ${getMissBadgeClass(miss)}`}>
+                          ミス {miss}回
+                        </span>
+                      ) : null;
+                    })()}
+
                     <p className="text-gray-500 text-sm mb-6 tracking-wide text-center">
                       {mode === 'writing' ? '下線部のひらがなを漢字で書きなさい。' : '下線部の漢字の読みをひらがなで答えなさい。'}
                     </p>
