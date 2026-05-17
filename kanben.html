@@ -361,6 +361,9 @@
       const [readingInput, setReadingInput] = useState('');
       const [history, setHistory] = useState(() => savedState?.history ?? {});
       const [excludeCorrect, setExcludeCorrect] = useState(() => savedState?.excludeCorrect ?? true);
+      const [hideRecoveredFromIncorrect, setHideRecoveredFromIncorrect] = useState(
+        () => savedState?.hideRecoveredFromIncorrect ?? true
+      );
       const [showCanvas, setShowCanvas] = useState(() => savedState?.showCanvas ?? true);
       const [penWidth, setPenWidth] = useState(() => savedState?.penWidth ?? 8);
       const [showAnswer, setShowAnswer] = useState(false);
@@ -396,9 +399,10 @@
             mode,
             showCanvas,
             penWidth,
+            hideRecoveredFromIncorrect,
           }));
         } catch (_) {}
-      }, [history, excludeCorrect, mode, showCanvas, penWidth]);
+      }, [history, excludeCorrect, mode, showCanvas, penWidth, hideRecoveredFromIncorrect]);
 
       const getDisplayYomi = (question) => {
         if (!question || !question.yomi) return '';
@@ -642,10 +646,18 @@
       );
 
       const renderListView = () => {
+        const isIncorrectListItem = (record) => {
+          if (!record) return false;
+          const hasMiss = record.status === 'incorrect' || record.missCount > 0;
+          if (!hasMiss) return false;
+          if (hideRecoveredFromIncorrect && record.status === 'correct') return false;
+          return true;
+        };
+
         const filterFunc = (item) => {
           const record = history[item.id];
           if (filterTab === 'unanswered') return !record;
-          if (filterTab === 'incorrect') return record && (record.status === 'incorrect' || record.missCount > 0);
+          if (filterTab === 'incorrect') return isIncorrectListItem(record);
           if (filterTab === 'correct') return record && record.status === 'correct';
           return true;
         };
@@ -676,7 +688,7 @@
           return dataList.filter(item => {
             const record = history[item.id];
             if (type === 'unanswered') return !record;
-            if (type === 'incorrect') return record && (record.status === 'incorrect' || record.missCount > 0);
+            if (type === 'incorrect') return isIncorrectListItem(record);
             if (type === 'correct') return record && record.status === 'correct';
             return false;
           }).length;
@@ -703,10 +715,14 @@
               <h2 className="text-md font-bold tracking-widest text-gray-900">問題一覧・学習設定</h2>
             </div>
 
-            <div className="mb-5 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="mb-5 p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-3">
               <label className="flex items-center gap-3 cursor-pointer select-none">
                 <input type="checkbox" checked={excludeCorrect} onChange={(e) => setExcludeCorrect(e.target.checked)} className="w-5 h-5 text-gray-900 bg-white border-gray-300 rounded focus:ring-gray-900 focus:ring-offset-0"/>
                 <span className="text-gray-900 font-bold tracking-wide text-sm">正解した問題は出題しない</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input type="checkbox" checked={hideRecoveredFromIncorrect} onChange={(e) => setHideRecoveredFromIncorrect(e.target.checked)} className="w-5 h-5 text-gray-900 bg-white border-gray-300 rounded focus:ring-gray-900 focus:ring-offset-0"/>
+                <span className="text-gray-900 font-bold tracking-wide text-sm">後に正解した問題を「間違えた」一覧から除外</span>
               </label>
             </div>
 
