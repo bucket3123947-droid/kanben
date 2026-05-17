@@ -364,17 +364,23 @@
       const [showCanvas, setShowCanvas] = useState(() => savedState?.showCanvas ?? true);
       const [showAnswer, setShowAnswer] = useState(false);
       const [result, setResult] = useState(null);
+      const [writingRetry, setWritingRetry] = useState(false);
       const [filterTab, setFilterTab] = useState('unanswered');
 
       const canvasRef = useRef(null);
       const containerRef = useRef(null);
       const isDrawingRef = useRef(false);
       const showAnswerRef = useRef(false);
+      const writingRetryRef = useRef(false);
       const [isDrawing, setIsDrawing] = useState(false);
 
       useEffect(() => {
         showAnswerRef.current = showAnswer;
       }, [showAnswer]);
+
+      useEffect(() => {
+        writingRetryRef.current = writingRetry;
+      }, [writingRetry]);
 
       useEffect(() => {
         try {
@@ -395,6 +401,7 @@
       const moveToNextQuestion = (currentHistory) => {
         setResult(null);
         setShowAnswer(false);
+        setWritingRetry(false);
         setReadingInput('');
         
         if (canvasRef.current && mode === 'writing' && showCanvas && view === 'quiz') {
@@ -443,11 +450,11 @@
           if (view === 'quiz' && mode === 'writing' && showCanvas) initCanvas();
         };
         window.addEventListener('resize', handleResize);
-        if (view === 'quiz' && mode === 'writing' && showCanvas && !showAnswer) {
+        if (view === 'quiz' && mode === 'writing' && showCanvas && (!showAnswer || writingRetry)) {
           initCanvas();
         }
         return () => window.removeEventListener('resize', handleResize);
-      }, [view, mode, showCanvas, currentQuestion, showAnswer]);
+      }, [view, mode, showCanvas, currentQuestion, showAnswer, writingRetry]);
 
       const getCoordinates = (e) => {
         const canvas = canvasRef.current;
@@ -463,7 +470,7 @@
       };
 
       const startDrawing = (e) => {
-        if (showAnswerRef.current) return;
+        if (showAnswerRef.current && !writingRetryRef.current) return;
         const { x, y } = getCoordinates(e);
         const ctx = canvasRef.current.getContext('2d');
         ctx.beginPath();
@@ -473,7 +480,7 @@
       };
 
       const draw = (e) => {
-        if (!isDrawingRef.current || showAnswerRef.current) return;
+        if (!isDrawingRef.current || (showAnswerRef.current && !writingRetryRef.current)) return;
         const { x, y } = getCoordinates(e);
         const ctx = canvasRef.current.getContext('2d');
         ctx.lineTo(x, y);
@@ -494,7 +501,7 @@
         if (!canvas || !showCanvas || mode !== 'writing' || view !== 'quiz') return;
 
         const onTouchStart = (e) => {
-          if (showAnswerRef.current) return;
+          if (showAnswerRef.current && !writingRetryRef.current) return;
           e.preventDefault();
           startDrawing(e);
         };
@@ -519,7 +526,7 @@
           canvas.removeEventListener('touchend', onTouchEnd);
           canvas.removeEventListener('touchcancel', onTouchEnd);
         };
-      }, [showCanvas, mode, view, currentQuestion, showAnswer]);
+      }, [showCanvas, mode, view, currentQuestion, showAnswer, writingRetry]);
 
       useEffect(() => {
         if (!isDrawing) return;
@@ -529,7 +536,7 @@
       }, [isDrawing]);
 
       const clearCanvas = () => {
-        if (showAnswer) return;
+        if (showAnswer && !writingRetry) return;
         initCanvas();
       };
 
@@ -546,11 +553,23 @@
             ...prev, 
             [currentQuestion.id]: { status: gradeResult, missCount: newMissCount } 
           };
-          setTimeout(() => {
-            moveToNextQuestion(nextHistory);
-          }, 1000);
+          if (gradeResult === 'correct') {
+            setTimeout(() => moveToNextQuestion(nextHistory), 1000);
+          }
           return nextHistory;
         });
+
+        if (gradeResult === 'incorrect') {
+          setTimeout(() => {
+            setResult(null);
+            setWritingRetry(true);
+            setShowCanvas(true);
+          }, 1000);
+        }
+      };
+
+      const handleRetryNext = () => {
+        moveToNextQuestion(history);
       };
 
       const handleCheckReading = () => {
@@ -796,19 +815,25 @@
                           </button>
                         </div>
                         
+                        {writingRetry && (
+                          <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-2 text-center tracking-wide">
+                            正解の漢字を手書きエリアにもう一度書いてみましょう
+                          </p>
+                        )}
+
                         {showCanvas && (
                           <div className="w-full relative animate-fade-in canvas-draw-area" ref={containerRef}>
-                            <div className={`border ${showAnswer ? 'border-gray-200' : 'border-gray-400'}`}>
+                            <div className={`border ${showAnswer && !writingRetry ? 'border-gray-200' : 'border-gray-400'}`}>
                               <canvas
                                 ref={canvasRef}
-                                className={`block w-full bg-white ${showAnswer ? 'opacity-50' : 'cursor-crosshair'}`}
+                                className={`block w-full bg-white ${showAnswer && !writingRetry ? 'opacity-50' : 'cursor-crosshair'}`}
                                 onMouseDown={startDrawing}
                                 onMouseMove={draw}
                                 onMouseUp={stopDrawing}
                                 onMouseLeave={stopDrawing}
                               />
                             </div>
-                            {!showAnswer && (
+                            {(!showAnswer || writingRetry) && (
                               <button onClick={clearCanvas} className="absolute -top-3 -right-3 p-2 bg-white border border-gray-300 text-gray-500 hover:text-gray-800 shadow-sm">
                                 <IconRefresh />
                               </button>
@@ -840,15 +865,29 @@
 
                       {mode === 'writing' && showAnswer && (
                         <div className="w-full animate-fade-in">
-                          <div className="text-center mb-6">
-                            <p className="text-sm text-gray-500 mb-1">正解</p>
-                            <p className="text-5xl font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
-                          </div>
-                          {!result && (
-                            <div className="flex gap-4 w-full">
-                              <button onClick={() => handleSelfGrade('incorrect')} className="flex-1 py-4 bg-white border-2 border-gray-300 text-gray-600 font-bold tracking-widest flex items-center justify-center gap-2"><IconX /> 間違えた</button>
-                              <button onClick={() => handleSelfGrade('correct')} className="flex-1 py-4 bg-gray-900 border-2 border-gray-900 text-white font-bold tracking-widest flex items-center justify-center gap-2 shadow-md"><IconCheck /> 正解できた</button>
-                            </div>
+                          {writingRetry ? (
+                            <>
+                              <div className="text-center mb-4">
+                                <p className="text-sm text-gray-500 mb-1">正解</p>
+                                <p className="text-5xl font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
+                              </div>
+                              <button onClick={handleRetryNext} className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3">
+                                次の問題へ <IconArrowRight />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-center mb-6">
+                                <p className="text-sm text-gray-500 mb-1">正解</p>
+                                <p className="text-5xl font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
+                              </div>
+                              {!result && (
+                                <div className="flex gap-4 w-full">
+                                  <button onClick={() => handleSelfGrade('incorrect')} className="flex-1 py-4 bg-white border-2 border-gray-300 text-gray-600 font-bold tracking-widest flex items-center justify-center gap-2"><IconX /> 間違えた</button>
+                                  <button onClick={() => handleSelfGrade('correct')} className="flex-1 py-4 bg-gray-900 border-2 border-gray-900 text-white font-bold tracking-widest flex items-center justify-center gap-2 shadow-md"><IconCheck /> 正解できた</button>
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       )}
