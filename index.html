@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中間テスト 漢字練習</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-[#f8f9fa]">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    // --- データ定義（文中の単語として出題） ---
+    const writingDataRaw = [
+      { kanji: '自負', yomi: 'じふ', sentence: 'プロとしての{target}を持つ。' },
+      { kanji: '知見', yomi: 'ちけん', sentence: '専門的な{target}を深める。' },
+      { kanji: '画期', yomi: 'かっき', sentence: 'それは{target}的な大発明だった。' },
+      { kanji: '自明', yomi: 'じめい', sentence: 'その事実は{target}の理である。' },
+      { kanji: '整合', yomi: 'せいごう', sentence: '前後の{target}性を図る。' },
+      { kanji: '横行', yomi: 'おうこう', sentence: '悪事が{target}する。' },
+      { kanji: '様操', yomi: 'ようそう', sentence: '街の{target}が一変する。' },
+      { kanji: '林立', yomi: 'りんりつ', sentence: '高層ビルが{target}する。' },
+      { kanji: '想定', yomi: 'そうてい', sentence: '最悪の事態を{target}して動く。' },
+      { kanji: '切実', yomi: 'せつじつ', sentence: '住民の{target}な願い。' },
+      { kanji: '想起', yomi: 'そうき', sentence: '過去の記憶を{target}させる。' },
+      { kanji: '消息', yomi: 'しょうそく', sentence: '友人の{target}を尋ねる。' },
+      { kanji: '太古', yomi: 'たいこ', sentence: '{target}の昔から伝わる伝説。' },
+      { kanji: '台頭', yomi: 'たいとう', sentence: '新興勢力が{target}する。' },
+      { kanji: '子細', yomi: 'しさい', sentence: '事の{target}を説明する。' },
+      { kanji: '親和', yomi: 'しんわ', sentence: 'この素材は水との{target}性が高い。' },
+      { kanji: '意外', yomi: 'いがい', sentence: '{target}な結果に驚く。' },
+      { kanji: '意図', yomi: 'いと', sentence: '著者の{target}を読み解く。' },
+      { kanji: '行使', yomi: 'こうし', sentence: '正当な権利を{target}する。' },
+      { kanji: '終生', yomi: 'しゅうせい', sentence: 'それを{target}の仕事とした。' },
+      { kanji: '分岐', yomi: 'ぶんき', sentence: '人生の{target}点に立つ。' },
+      { kanji: '兆候', yomi: 'ちょうこう', sentence: '景気回復の{target}が見える。' },
+      { kanji: '帰結', yomi: 'きけつ', sentence: '論理の必然的な{target}。' },
+      { kanji: '周知', yomi: 'しゅうち', sentence: 'その事実は{target}の通りだ。' },
+      { kanji: '念頭', yomi: 'ねん頭', sentence: '安全を{target}に置いて作業する。' },
+      { kanji: '建立', yomi: 'こんりゅう', sentence: '立派な寺院を{target}する。' },
+      { kanji: '共鳴', yomi: 'きょうめい', sentence: '彼の意見に深く{target}した。' },
+      { kanji: '徒労', yomi: 'とろう', sentence: 'これまでの苦労が{target}に終わる。' },
+      { kanji: '究極', yomi: 'きゅうきょく', sentence: '{target}の選択を迫られる。' },
+      { kanji: '希求', yomi: 'ききゅう', sentence: '平和を{target}する心。' },
+      { kanji: '固有', yomi: 'こゆう', sentence: '日本{target}の文化。' },
+      { kanji: '参照', yomi: 'さんしょう', sentence: '添付ファイルを{target}してください。' },
+      { kanji: '所産', yomi: 'しょさん', sentence: '長年の努力の{target}だ。' },
+      { kanji: '察知', yomi: 'さっち', sentence: '危険を{target}して逃げる。' },
+      { kanji: '未練', yomi: 'みれん', sentence: '過去に{target}を残さない。' },
+      { kanji: '帯びる', yomi: 'おびる', sentence: '熱を{target}議論。' },
+      { kanji: '標的', yomi: 'ひょうてき', sentence: '{target}に向かって矢を放つ。' },
+      { kanji: '刷新', yomi: 'さっしん', sentence: '組織の体制を{target}する。' },
+      { kanji: '指標', yomi: 'しひょう', sentence: '景気動向の{target}となる。' },
+      { kanji: '機先', yomi: 'きせん', sentence: '相手の{target}を制する。' },
+      { kanji: '対極', yomi: 'たいきょく', sentence: '二人の意見は{target}にある。' },
+      { kanji: '位相', yomi: 'いそう', sentence: '言語の{target}を研究する。' },
+      { kanji: '挙動', yomi: 'きょどう', sentence: '不審な{target}の人物。' },
+      { kanji: '集積', yomi: 'しゅうせき', sentence: 'データが{target}されている。' },
+      { kanji: '談笑', yomi: 'だんしょう', sentence: '和やかに{target}する。' },
+      { kanji: '一挙', yomi: 'いっきょ', sentence: '問題を{target}に解決する。' },
+      { kanji: '案外', yomi: 'あんがい', sentence: 'やってみると{target}簡単だった。' },
+      { kanji: '器量', yomi: 'きりょう', sentence: 'リーダーとしての{target}が問われる。' },
+      { kanji: '便乗', yomi: 'びんじょう', sentence: 'ブームに{target}して商品を売る。' },
+      { kanji: '側面', yomi: 'そくめん', sentence: '物事の別の{target}を見る。' },
+      { kanji: '配置', yomi: 'はいち', sentence: '家具の{target}を変える。' },
+      { kanji: '岐路', yomi: 'きろ', sentence: '人生の{target}に立たされる。' },
+      { kanji: '号泣', yomi: 'ごうきゅう', sentence: '悲しみのあまり{target}した。' },
+      { kanji: '器官', yomi: 'きかん', sentence: '消化{target}の働き。' },
+      { kanji: '待機', yomi: 'たいき', sentence: 'その場で{target}を命じられる。' },
+      { kanji: '課す', yomi: 'かす', sentence: '生徒に宿題を{target}。' },
+      { kanji: '観念', yomi: 'かんねん', sentence: 'もはやこれまでと{target}する。' },
+      { kanji: '強要', yomi: 'きょうよう', sentence: '無理な要求を{target}される。' },
+      { kanji: '根底', yomi: 'こんてい', sentence: '思想の{target}にあるもの。' },
+      { kanji: '辞す', yomi: 'じす', sentence: '社長の職を{target}。' },
+      { kanji: '不断', yomi: 'ふだん', sentence: '{target}の努力を続ける。' },
+      { kanji: '提唱', yomi: 'ていしょう', sentence: '新しい理論を{target}する。' },
+      { kanji: '構築', yomi: 'こうちく', sentence: '信頼関係を{target}する。' },
+      { kanji: '連綿', yomi: 'れんめん', sentence: '古くから{target}と受け継がれる。' },
+      { kanji: '過程', yomi: 'かてい', sentence: '成長の{target}を見守る。' },
+      { kanji: '余地', yomi: 'よち', sentence: '弁解の{target}はない。' },
+      { kanji: '際限', yomi: 'さいげん', sentence: '欲望には{target}がない。' },
+      { kanji: '保証', yomi: 'ほしょう', sentence: '商品の品質を{target}する。' },
+      { kanji: '効率', yomi: 'こうりつ', sentence: '作業の{target}を上げる。' },
+      { kanji: '帰属', yomi: 'きぞく', sentence: '集団への{target}意識。' },
+      { kanji: '功績', yomi: 'こうせき', sentence: '多大な{target}を残す。' },
+      { kanji: '根幹', yomi: 'こんかん', sentence: '国家の{target}を揺るがす。' },
+      { kanji: '起因', yomi: 'きいん', sentence: 'ストレスに{target}する病気。' },
+      { kanji: '肥大', yomi: 'ひだい', sentence: '組織が{target}化する。' },
+      { kanji: '具現', yomi: 'ぐげん', sentence: '理想を{target}化する。' },
+      { kanji: '典型', yomi: 'てんけい', sentence: '{target}的な日本の風景。' },
+      { kanji: '逆説', yomi: 'ぎゃくせつ', sentence: '急がば回れは{target}的な真理だ。' },
+      { kanji: '前提', yomi: 'ぜんてい', sentence: '安全を{target}とした計画。' },
+      { kanji: '任意', yomi: 'にんい', sentence: '参加は{target}です。' },
+      { kanji: '辺境', yomi: 'へんきょう', sentence: '{target}の地を旅する。' },
+      { kanji: '検証', yomi: 'けんしょう', sentence: '仮説を実験で{target}する。' },
+      { kanji: '険悪', yomi: 'けんあく', sentence: '二人の仲が{target}になる。' },
+      { kanji: '故意', yomi: 'こい', sentence: '{target}に相手を傷つける。' },
+      { kanji: '講義', yomi: 'こうぎ', sentence: '大学で歴史の{target}を受ける。' },
+      { kanji: '格好', yomi: 'かっこう', sentence: 'みすぼらしい{target}。' },
+      { kanji: '容易', yomi: 'ようい', sentence: '解決するのは{target}ではない。' },
+      { kanji: '要領', yomi: 'ようりょう', sentence: '{target}よく仕事をこなす。' },
+      { kanji: '照応', yomi: 'しょうおう', sentence: '前後の文脈が{target}する。' },
+      { kanji: '低迷', yomi: 'ていめい', sentence: '業績が{target}している。' },
+      { kanji: '英断', yomi: 'えいだん', sentence: '社長の{target}に感謝する。' },
+      { kanji: '興味', yomi: 'きょうみ', sentence: '科学に{target}を持つ。' },
+      { kanji: '修復', yomi: 'しゅうふく', sentence: '古い絵画を{target}する。' },
+      { kanji: '招待', yomi: 'しょうたい', sentence: '友人を結婚式に{target}する。' },
+      { kanji: '照準', yomi: 'しょうじゅん', sentence: '的に{target}を合わせる。' },
+      { kanji: '留保', yomi: 'りゅうほ', sentence: '返答を{target}する。' },
+      { kanji: '確信', yomi: 'かくしん', sentence: '勝利を{target}する。' },
+      { kanji: '基幹', yomi: 'きかん', sentence: '国の{target}産業。' },
+      { kanji: '構想', yomi: 'こうそう', sentence: '新しい街づくりの{target}。' },
+      { kanji: '基底', yomi: 'きてい', sentence: '文化の{target}にある思想。' },
+      { kanji: '志向', yomi: 'しこう', sentence: '上昇{target}が強い。' },
+      { kanji: '往来', yomi: 'おうらい', sentence: '車の{target}が激しい。' },
+      { kanji: '許容', yomi: 'きょよう', sentence: '{target}範囲を超える。' },
+      { kanji: '業績', yomi: 'ぎょうせき', sentence: '会社の{target}が上がる。' },
+      { kanji: '制約', yomi: 'せいやく', sentence: '時間的な{target}がある。' },
+      { kanji: '判然', yomi: 'はんぜん', sentence: '理由が{target}としない。' },
+      { kanji: '標識', yomi: 'ひょうしき', sentence: '道路{target}に従う。' },
+      { kanji: '規格', yomi: 'きかく', sentence: '{target}外の製品。' },
+      { kanji: '功罪', yomi: 'こうざい', sentence: 'SNSの{target}を論じる。' },
+      { kanji: '高潔', yomi: 'こうけつ', sentence: '{target}な人格の持ち主。' },
+      { kanji: '적確', yomi: 'てきかく', sentence: '{target}なアドバイス。' },
+      { kanji: '不可分', yomi: 'ふかぶん', sentence: '両者は{target}の関係にある。' },
+      { kanji: '不条理', yomi: 'ふじょうり', sentence: '世の中の{target}を嘆く。' },
+      { kanji: '基調', yomi: 'きちょう', sentence: '白を{target}としたデザイン。' },
+      { kanji: '費やす', yomi: 'ついやす', sentence: '多くの時間を{target}。' },
+      { kanji: '精度', yomi: 'せいど', sentence: '機械の{target}を高める。' },
+      { kanji: '確立', yomi: 'かくりつ', sentence: '自我が{target}する。' },
+      { kanji: '境地', yomi: 'きょうち', sentence: '無我の{target}に至る。' },
+      { kanji: '領分', yomi: 'りょうぶん', sentence: '他人の{target}を侵さない。' },
+      { kanji: '間断', yomi: 'かんだん', sentence: '{target}なく雨が降る。' },
+      { kanji: '発揮', yomi: 'はっき', sentence: '実力を{target}する。' },
+      { kanji: '君臨', yomi: 'くんりん', sentence: '絶対的な王者として{target}する。' },
+      { kanji: '厳密', yomi: 'げんみつ', sentence: '{target}な審査を行う。' },
+      { kanji: '看過', yomi: 'かんか', sentence: '{target}できない重大なミス。' },
+      { kanji: '洗練', yomi: 'せんれん', sentence: '{target}されたデザイン。' },
+      { kanji: '操作', yomi: 'そうさ', sentence: '機械を{target}する。' },
+      { kanji: '検討', yomi: 'けんとう', sentence: '解決策を{target}する。' },
+      { kanji: '射程', yomi: 'しゃてい', sentence: '優勝が{target}圏内に入る。' },
+      { kanji: '潮流', yomi: 'ちょうゅう', sentence: '時代の{target}に乗る。' },
+      { kanji: '捨象', yomi: 'しゃしょう', sentence: '特殊性を{target}して一般化する。' },
+      { kanji: '保障', yomi: 'ほしょう', sentence: '安全を{target}する制度。' },
+      { kanji: '興奮', yomi: 'こうふん', sentence: '試合を見て{target}する。' },
+      { kanji: '刻印', yomi: 'こくいん', sentence: '記憶に深く{target}される。' },
+      { kanji: '精密', yomi: 'せいみつ', sentence: '{target}な機械を作る。' },
+      { kanji: '看破', yomi: 'かんぱ', sentence: '相手の嘘を{target}する。' },
+      { kanji: '枚挙', yomi: 'まいきょ', sentence: '事例は{target}にいとまがない。' },
+      { kanji: '深刻', yomi: 'しんこく', sentence: '{target}な問題に直面する。' },
+      { kanji: '派生', yomi: 'はせい', sentence: 'そこから{target}した問題。' },
+      { kanji: '収拾', yomi: 'しゅうしゅう', sentence: '事態の{target}を図る。' },
+      { kanji: '担保', yomi: 'たんぽ', sentence: '土地を{target}にお金を借りる。' },
+      { kanji: '規模', yomi: 'きぼ', sentence: '大規模な{target}の工事。' },
+      { kanji: '支障', yomi: 'ししょう', sentence: '生活に{target}をきたす。' },
+      { kanji: '推移', yomi: 'すいい', sentence: '事態の{target}を見守る。' },
+      { kanji: '領域', yomi: 'りょういき', sentence: '未知の{target}に踏み込む。' },
+      { kanji: '格段', yomi: 'かくだん', sentence: '{target}に進歩する。' },
+      { kanji: '装置', yomi: 'そうち', sentence: '安全{target}を作動させる。' },
+      { kanji: '特異', yomi: 'とくい', sentence: '{target}な才能を示す。' },
+      { kanji: '脳裏', yomi: 'のうり', sentence: 'あの光景が{target}に焼き付く。' },
+      { kanji: '加担', yomi: 'かたん', sentence: '犯罪に{target}する。' },
+      { kanji: '尊厳', yomi: 'そんげん', sentence: '人間の{target}を守る。' },
+      { kanji: '風潮', yomi: 'ふうちょう', sentence: '世間の{target}に流される。' },
+      { kanji: '散策', yomi: 'さんさく', sentence: '公園を{target}する。' },
+      { kanji: '操縦', yomi: 'そうじゅう', sentence: '飛行機を{target}する。' },
+      { kanji: '拡散', yomi: 'かくさん', sentence: '情報がSNSで{target}する。' },
+      { kanji: '厳格', yomi: 'げんかく', sentence: '{target}なルールに従う。' },
+      { kanji: '裁量', yomi: 'さいryou', sentence: '個人の{target}に任せる。' },
+      { kanji: '従事', yomi: 'じゅうじ', sentence: '農業に{target}する。' },
+      { kanji: '制裁', yomi: 'せいさい', sentence: '経済{target}を加える。' },
+      { kanji: '異議', yomi: 'いぎ', sentence: '{target}を唱える。' },
+      { kanji: '専門', yomi: 'せんもん', sentence: '{target}家の意見を聞く。' },
+      { kanji: '熟練', yomi: 'じゅくれん', sentence: '{target}の技が光る。' },
+      { kanji: '仲裁', yomi: 'ちゅうさい', sentence: '喧嘩の{target}に入る。' },
+      { kanji: '貯蔵', yomi: 'ちょぞう', sentence: '食料を{target}する。' },
+      { kanji: '負担', yomi: 'ふたん', sentence: '費用の半分を{target}する。' },
+      { kanji: '補完', yomi: 'ほかん', sentence: '互いの弱点を{target}する。' },
+      { kanji: '簡素', yomi: 'かんそ', sentence: '{target}な作りの家。' },
+      { kanji: '候補', yomi: 'こうほ', sentence: '次期社長の{target}。' },
+      { kanji: '根源', yomi: 'こんげん', sentence: '問題の{target}を探る。' },
+      { kanji: '反映', yomi: 'はんえい', sentence: '世論を{target}した政策。' },
+      { kanji: '拡張', yomi: 'かくちょう', sentence: '道路を{target}する。' },
+      { kanji: '帰納', yomi: 'きのう', sentence: '具体例から法則を{target}する。' },
+      { kanji: '劇的', yomi: 'げきてき', sentence: '{target}な勝利を収める。' },
+      { kanji: '故障', yomi: 'こしょう', sentence: '機械が{target}する。' },
+      { kanji: '姿勢', yomi: 'しせい', sentence: '学ぶ{target}が大切だ。' },
+      { kanji: '至上', yomi: 'しじょう', sentence: '利益{target}主義。' },
+      { kanji: '方策', yomi: 'ほうさく', sentence: '打開のための{target}を練る。' },
+      { kanji: '容姿', yomi: 'ようし', sentence: '端麗な{target}の持ち主。' },
+      { kanji: '朗読', yomi: 'ろうどく', sentence: '詩を{target}する。' },
+      { kanji: '展開', yomi: 'てんかい', sentence: '予想外の{target}になる。' },
+      { kanji: '刻む', yomi: 'きざむ', sentence: '歴史に名を{target}。' },
+      { kanji: '差異', yomi: 'さい', sentence: '両者には大きな{target}がある。' },
+      { kanji: '簡潔', yomi: 'かんけつ', sentence: '{target}に説明する。' },
+      { kanji: '救済', yomi: 'きゅうさい', sentence: '被害者を{target}する。' },
+      { kanji: '至難', yomi: 'しなん', sentence: 'それは{target}の業だ。' },
+      { kanji: '宣告', yomi: 'せんこく', sentence: '医師から余命を{target}される。' },
+      { kanji: '圧巻', yomi: 'あっかん', sentence: '彼の演技は{target}だった。' },
+      { kanji: '危機', yomi: 'きき', sentence: '絶滅の{target}に瀕する。' },
+      { kanji: '敬遠', yomi: 'けいえん', sentence: '面倒な仕事を{target}する。' },
+      { kanji: '系統', yomi: 'けいとう', sentence: '生物の{target}を分類する。' },
+      { kanji: '源泉', yomi: 'げんせん', sentence: '知識の{target}。' },
+      { kanji: '指針', yomi: 'ししん', sentence: '行動の{target}を示す。' },
+      { kanji: '従属', yomi: 'じゅうぞく', sentence: '大国に{target}する。' },
+      { kanji: '奮起', yomi: 'ふんき', sentence: '叱咤されて{target}する。' },
+      { kanji: '階層', yomi: 'かいそう', sentence: '社会の様々な{target}。' },
+      { kanji: '補佐', yomi: 'ほさ', sentence: '社長を{target}する役目。' },
+      { kanji: '徒党', yomi: 'ととう', sentence: '{target}を組んで反抗する。' },
+      { kanji: '格納', yomi: 'かくのう', sentence: 'データを{target}する。' },
+      { kanji: '宣伝', yomi: 'せんでん', sentence: '新商品を{target}する。' },
+      { kanji: '体系', yomi: 'たいけい', sentence: '知識を{target}化する。' }
+    ];
+
+    const readingDataRaw = [
+      { kanji: '所作', yomi: ['しょさ'], sentence: '美しい{target}を身につける。' },
+      { kanji: '工面', yomi: ['くめん'], sentence: '旅行の費用を{target}する。' },
+      { kanji: '委ねる', yomi: ['ゆだねる'], sentence: '最終的な判断を専門家に{target}。' },
+      { kanji: '都度', yomi: ['つど'], sentence: '問題が起きる{target}対応する。' },
+      { kanji: '育む', yomi: ['はぐくむ'], sentence: '子どもたちの豊かな心を{target}。' },
+      { kanji: '由来', yomi: ['ゆらい'], sentence: '地名の{target}を調べる。' },
+      { kanji: '気配', yomi: ['けはい'], sentence: '朝夕に秋の{target}を感じる。' },
+      { kanji: '画一', yomi: ['かくいつ'], sentence: '{target}的な詰め込み教育。' },
+      { kanji: '毛頭', yomi: ['もうとう'], sentence: '彼に謝る気は{target}ない。' },
+      { kanji: '所行', yomi: ['しょぎょう'], sentence: '悪魔の{target}とは思えない。' },
+      { kanji: '定石', yomi: ['じょうせき'], sentence: '囲碁の{target}を覚える。' },
+      { kanji: '門戸', yomi: ['もんこ'], sentence: '広く世界に{target}を開く。' },
+      { kanji: '形相', yomi: ['ぎょうそう'], sentence: '恐ろしい{target}で睨みつける。' },
+      { kanji: '食指', yomi: ['しょくし'], sentence: 'その条件では{target}が動かない。' },
+      { kanji: '直筆', yomi: ['じきひつ'], sentence: '作家の{target}の原稿が発見された。' },
+      { kanji: '半ば', yomi: ['なかば'], sentence: 'プロジェクトは{target}で頓挫した。' },
+      { kanji: '間近', yomi: ['まぢか'], sentence: '試験が{target}に迫っている。' },
+      { kanji: '反らす', yomi: ['そらす'], sentence: '気まずくなって目を{target}。' },
+      { kanji: '世間', yomi: ['せけん'], sentence: '{target}の注目を集める事件。' },
+      { kanji: '直ちに', yomi: ['ただちに'], sentence: '異常があれば{target}報告しなさい。' },
+      { kanji: '唱える', yomi: ['となえる'], sentence: '新しい学説を{target}。' },
+      { kanji: '必定', yomi: ['ひつじょう'], sentence: '失敗するのは{target}だ。' },
+      { kanji: '山積', yomi: ['さんせき', 'やまづみ'], sentence: '解決すべき課題が{target}している。' },
+      { kanji: '浴びる', yomi: ['あびる'], sentence: '世間の非難を{target}。' },
+      { kanji: '内省', yomi: ['ないせい'], sentence: '自らの行動を深く{target}する。' },
+      { kanji: '天然', yomi: ['てんねん'], sentence: '{target}の素材を生かす。' },
+      { kanji: '試練', yomi: ['しれん'], sentence: '厳しい{target}を乗り越える。' },
+      { kanji: '方便', yomi: ['ほうべん'], sentence: '嘘も{target}だ。' },
+      { kanji: '参画', yomi: ['さんかく'], sentence: 'プロジェクトに{target}する。' },
+      { kanji: '昨今', yomi: ['さっこん'], sentence: '{target}の社会情勢を語る。' },
+      { kanji: '省く', yomi: ['はぶく'], sentence: '無駄な手間を{target}。' },
+      { kanji: '健やか', yomi: ['すこやか'], sentence: '子どもが{target}に育つ。' },
+      { kanji: '司る', yomi: ['つかさどる'], sentence: '政治を{target}機関。' },
+      { kanji: '末期', yomi: ['まつご'], sentence: '{target}の水を口に含む。' },
+      { kanji: '束', yomi: ['たば'], sentence: '紙の{target}を抱える。' },
+      { kanji: '口伝', yomi: ['くでん'], sentence: '奥義を{target}で教える。' },
+      { kanji: '連なり', yomi: ['つらなり'], sentence: '山々の{target}が見える。' },
+      { kanji: '刷る', yomi: ['する'], sentence: '年賀状を{target}。' },
+      { kanji: '建前', yomi: ['たてまえ'], sentence: '本音と{target}を使い分ける。' },
+      { kanji: '養生', yomi: ['ようじょう'], sentence: '病気のために{target}する。' },
+      { kanji: '無造作', yomi: ['むぞうさ'], sentence: '髪を{target}に束ねる。' },
+      { kanji: '感興', yomi: ['かんきょう'], sentence: '{target}が湧いてくる。' },
+      { kanji: '因習', yomi: ['いんしゅう'], sentence: '古い{target}を打破する。' },
+      { kanji: '営み', yomi: ['いとなみ'], sentence: '人間の日々の{target}。' },
+      { kanji: '設ける', yomi: ['もうける'], sentence: '相談窓口を{target}。' },
+      { kanji: '代謝', yomi: ['たいしゃ'], sentence: '新陳{target}を促す。' },
+      { kanji: '不易', yomi: ['ふえき'], sentence: '{target}流行の精神。' },
+      { kanji: '確固たる', yomi: ['かっこたる'], sentence: '{target}信念を持つ。' },
+      { kanji: '息災', yomi: ['そくさい'], sentence: '無病{target}を祈る。' },
+      { kanji: '保身', yomi: ['ほしん'], sentence: '{target}を図る言い訳。' },
+      { kanji: '便益', yomi: ['べんえき'], sentence: '社会的な{target}をもたらす。' },
+      { kanji: '名状', yomi: ['めいじょう'], sentence: '{target}しがたい美しさ。' },
+      { kanji: '挙句', yomi: ['あげく'], sentence: 'さんざん迷った{target}に決めた。' },
+      { kanji: '過言', yomi: ['かごん'], sentence: '天才と言っても{target}ではない。' },
+      { kanji: '快く', yomi: ['こころよく'], sentence: '依頼を{target}引き受ける。' },
+      { kanji: '重複', yomi: ['ちょうふく', 'じゅうふく'], sentence: '内容が{target}している。' },
+      { kanji: '招集', yomi: ['しょうしゅう'], sentence: '国会を{target}する。' },
+      { kanji: '世古', yomi: ['せこ'], sentence: '{target}に長けた人物。' },
+      { kanji: '至極', yomi: ['しごく'], sentence: '{target}当然の報いだ。' }
+    ];
+
+    const writingData = writingDataRaw.map((item, idx) => ({ ...item, id: `w${idx}` }));
+    const readingData = readingDataRaw.map((item, idx) => ({ ...item, id: `r${idx}` }));
+
+    // --- SVGアイコン定義 ---
+    const IconRefresh = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    );
+    const IconArrowRight = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    );
+    const IconEdit2 = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+    );
+    const IconType = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+    );
+    const IconCheck = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    );
+    const IconX = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    );
+    const IconList = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+    );
+    const IconArrowLeft = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    );
+    const IconStar = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+    );
+    const IconCheckCircle = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    );
+    const IconPenOn = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+    );
+    const IconPenOff = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 2 20 20"/><path d="M10 10 2.5 17.5 6 21 14 14"/><path d="m14 4 6 6"/><path d="m15.5 8.5 5-5a2.828 2.828 0 1 0-4-4l-5 5"/></svg>
+    );
+
+    const GradeMark = ({ type }) => {
+      if (type === 'correct') {
+        return (
+          <svg className="w-48 h-48 text-[#ef4444]" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6">
+            <circle cx="50" cy="50" r="40" />
+          </svg>
+        );
+      } else {
+        return (
+          <svg className="w-48 h-48 text-[#3b82f6]" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round">
+            <line x1="25" y1="25" x2="75" y2="75" />
+            <line x1="75" y1="25" x2="25" y2="75" />
+          </svg>
+        );
+      }
+    };
+
+    function App() {
+      const [view, setView] = useState('quiz');
+      const [mode, setMode] = useState('writing');
+      const [currentQuestion, setCurrentQuestion] = useState(null);
+      const [readingInput, setReadingInput] = useState('');
+      const [history, setHistory] = useState({});
+      const [excludeCorrect, setExcludeCorrect] = useState(true);
+      const [showCanvas, setShowCanvas] = useState(true);
+      const [showAnswer, setShowAnswer] = useState(false);
+      const [result, setResult] = useState(null);
+      const [filterTab, setFilterTab] = useState('unanswered');
+
+      const canvasRef = useRef(null);
+      const containerRef = useRef(null);
+      const [isDrawing, setIsDrawing] = useState(false);
+
+      const getDisplayYomi = (question) => {
+        if (!question || !question.yomi) return '';
+        return Array.isArray(question.yomi) ? question.yomi.join(' / ') : question.yomi;
+      };
+
+      const moveToNextQuestion = (currentHistory) => {
+        setResult(null);
+        setShowAnswer(false);
+        setReadingInput('');
+        
+        if (canvasRef.current && mode === 'writing' && showCanvas && view === 'quiz') {
+          initCanvas();
+        }
+
+        const list = mode === 'writing' ? writingData : readingData;
+        let availableList = list;
+        
+        if (excludeCorrect) {
+          availableList = list.filter(item => currentHistory[item.id]?.status !== 'correct');
+        }
+        
+        if (availableList.length === 0) {
+          setCurrentQuestion(null);
+          return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableList.length);
+        setCurrentQuestion(availableList[randomIndex]);
+      };
+
+      useEffect(() => {
+        moveToNextQuestion(history);
+      }, [mode, excludeCorrect]);
+
+      const initCanvas = () => {
+        const canvas = canvasRef.current;
+        const container = containerRef.current;
+        if (!canvas || !container) return;
+
+        canvas.width = container.clientWidth;
+        canvas.height = canvas.width * 0.7;
+
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = '#2d3748';
+      };
+
+      useEffect(() => {
+        const handleResize = () => {
+          if (view === 'quiz' && mode === 'writing' && showCanvas) initCanvas();
+        };
+        window.addEventListener('resize', handleResize);
+        if (view === 'quiz' && mode === 'writing' && showCanvas && !showAnswer) {
+          initCanvas();
+        }
+        return () => window.removeEventListener('resize', handleResize);
+      }, [view, mode, showCanvas, currentQuestion, showAnswer]);
+
+      const getCoordinates = (e) => {
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        if (e.touches && e.touches.length > 0) {
+          return { x: (e.touches[0].clientX - rect.left) * scaleX, y: (e.touches[0].clientY - rect.top) * scaleY };
+        } else {
+          return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+        }
+      };
+
+      const startDrawing = (e) => {
+        if (showAnswer) return;
+        const { x, y } = getCoordinates(e);
+        const ctx = canvasRef.current.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        setIsDrawing(true);
+      };
+
+      const draw = (e) => {
+        if (!isDrawing || showAnswer) return;
+        const { x, y } = getCoordinates(e);
+        const ctx = canvasRef.current.getContext('2d');
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      };
+
+      const stopDrawing = () => {
+        if (isDrawing) {
+          const ctx = canvasRef.current.getContext('2d');
+          ctx.closePath();
+          setIsDrawing(false);
+        }
+      };
+
+      const clearCanvas = () => {
+        if (showAnswer) return;
+        initCanvas();
+      };
+
+      const handleShowAnswer = () => {
+        setShowAnswer(true);
+      };
+
+      const handleSelfGrade = (gradeResult) => {
+        setResult(gradeResult);
+        setHistory(prev => {
+          const currentData = prev[currentQuestion.id] || { missCount: 0 };
+          const newMissCount = gradeResult === 'incorrect' ? currentData.missCount + 1 : currentData.missCount;
+          const nextHistory = { 
+            ...prev, 
+            [currentQuestion.id]: { status: gradeResult, missCount: newMissCount } 
+          };
+          setTimeout(() => {
+            moveToNextQuestion(nextHistory);
+          }, 1000);
+          return nextHistory;
+        });
+      };
+
+      const handleCheckReading = () => {
+        const normalizedInput = readingInput.trim().replace(/[\s　]/g, '');
+        const isCorrect = Array.isArray(currentQuestion.yomi) 
+          ? currentQuestion.yomi.includes(normalizedInput)
+          : currentQuestion.yomi === normalizedInput;
+        const gradeResult = isCorrect ? 'correct' : 'incorrect';
+        
+        setResult(gradeResult);
+        setHistory(prev => {
+          const currentData = prev[currentQuestion.id] || { missCount: 0 };
+          const newMissCount = gradeResult === 'incorrect' ? currentData.missCount + 1 : currentData.missCount;
+          return { 
+            ...prev, 
+            [currentQuestion.id]: { status: gradeResult, missCount: newMissCount } 
+          };
+        });
+        setShowAnswer(true);
+      };
+
+      const handleNextClick = () => {
+        moveToNextQuestion(history);
+      };
+
+      const renderSentence = () => {
+        if (!currentQuestion) return null;
+        const parts = currentQuestion.sentence.split('{target}');
+        const targetText = mode === 'writing' ? getDisplayYomi(currentQuestion) : currentQuestion.kanji;
+        
+        return (
+          <div className="text-xl md:text-2xl tracking-widest mb-8 text-center text-gray-800 leading-relaxed font-serif animate-fade-in">
+            {parts[0]}
+            <span className="font-bold border-b-2 border-gray-900 px-2 mx-1 text-2xl md:text-3xl text-gray-900 inline-block min-w-[80px]">
+              {targetText}
+            </span>
+            {parts[1]}
+          </div>
+        );
+      };
+
+      const renderAllClear = () => (
+        <div className="p-10 flex flex-col items-center justify-center min-h-[400px] text-center animate-fade-in">
+          <div className="mb-6">
+            <svg className="w-24 h-24 text-gray-900 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold tracking-widest text-gray-900 mb-4">全問クリア！</h2>
+          <p className="text-gray-600 mb-8 leading-relaxed text-sm">
+            設定した条件で出題できる問題は<br/>もうありません。
+          </p>
+          <div className="space-y-4 w-full max-w-xs">
+            <button onClick={() => setExcludeCorrect(false)} className="w-full py-4 bg-gray-900 text-white font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-md">
+              全問から出題する
+            </button>
+            <button onClick={() => { setHistory({}); moveToNextQuestion({}); }} className="w-full py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold tracking-widest hover:bg-gray-50 transition-colors">
+              学習履歴をリセット
+            </button>
+          </div>
+        </div>
+      );
+
+      const renderListView = () => {
+        const filterFunc = (item) => {
+          const record = history[item.id];
+          if (filterTab === 'unanswered') return !record;
+          if (filterTab === 'incorrect') return record && (record.status === 'incorrect' || record.missCount > 0);
+          if (filterTab === 'correct') return record && record.status === 'correct';
+          return true;
+        };
+
+        const filteredWriting = writingData.filter(filterFunc);
+        const filteredReading = readingData.filter(filterFunc);
+
+        const countTotal = (dataList, type) => {
+          return dataList.filter(item => {
+            const record = history[item.id];
+            if (type === 'unanswered') return !record;
+            if (type === 'incorrect') return record && (record.status === 'incorrect' || record.missCount > 0);
+            if (type === 'correct') return record && record.status === 'correct';
+            return false;
+          }).length;
+        };
+
+        const writingCount = {
+          unanswered: countTotal(writingData, 'unanswered'),
+          incorrect: countTotal(writingData, 'incorrect'),
+          correct: countTotal(writingData, 'correct')
+        };
+
+        const readingCount = {
+          unanswered: countTotal(readingData, 'unanswered'),
+          incorrect: countTotal(readingData, 'incorrect'),
+          correct: countTotal(readingData, 'correct')
+        };
+
+        return (
+          <div className="p-4 md:p-6 flex flex-col min-h-[500px] animate-fade-in text-gray-900">
+            <div className="flex justify-between items-center mb-5">
+              <button onClick={() => setView('quiz')} className="text-gray-500 hover:text-gray-900 flex items-center gap-2 font-bold tracking-widest transition-colors text-sm">
+                <IconArrowLeft /> 戻る
+              </button>
+              <h2 className="text-md font-bold tracking-widest text-gray-900">問題一覧・学習設定</h2>
+            </div>
+
+            <div className="mb-5 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input type="checkbox" checked={excludeCorrect} onChange={(e) => setExcludeCorrect(e.target.checked)} className="w-5 h-5 text-gray-900 bg-white border-gray-300 rounded focus:ring-gray-900 focus:ring-offset-0"/>
+                <span className="text-gray-900 font-bold tracking-wide text-sm">正解した問題は出題しない</span>
+              </label>
+            </div>
+
+            <div className="flex border-b border-gray-300 mb-5 bg-[#fafafa] rounded-t-md">
+              <button onClick={() => setFilterTab('unanswered')} className={`flex-1 py-3 text-xs tracking-wider transition-colors font-bold border-b-2 flex flex-col items-center justify-center gap-1 ${filterTab === 'unanswered' ? 'border-gray-900 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-100'}`}>
+                <span>未回答</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-200 text-gray-700 font-medium">{writingCount.unanswered + readingCount.unanswered}</span>
+              </button>
+              <button onClick={() => setFilterTab('incorrect')} className={`flex-1 py-3 text-xs tracking-wider transition-colors font-bold border-b-2 flex flex-col items-center justify-center gap-1 ${filterTab === 'incorrect' ? 'border-gray-900 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-100'}`}>
+                <span>間違えた</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">{writingCount.incorrect + readingCount.incorrect}</span>
+              </button>
+              <button onClick={() => setFilterTab('correct')} className={`flex-1 py-3 text-xs tracking-wider transition-colors font-bold border-b-2 flex flex-col items-center justify-center gap-1 ${filterTab === 'correct' ? 'border-gray-900 text-gray-900 bg-white' : 'border-transparent text-gray-500 hover:bg-gray-100'}`}>
+                <span>正解した</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">{writingCount.correct + readingCount.correct}</span>
+              </button>
+            </div>
+
+            <div className="flex-1 max-h-[380px] overflow-y-auto pr-1 space-y-6 scrollbar-thin">
+              <div>
+                <h3 className="font-bold text-gray-900 border-b border-gray-200 pb-1.5 mb-3 tracking-widest text-sm flex items-center justify-between">
+                  <span>書き問題</span>
+                  <span className="text-xs text-gray-500 font-normal">{filteredWriting.length} 件</span>
+                </h3>
+                {filteredWriting.length === 0 ? <p className="text-gray-400 text-xs text-center py-4">該当問題はありません。</p> : (
+                  <ul className="space-y-1">
+                    {filteredWriting.map(item => {
+                      const record = history[item.id];
+                      return (
+                        <li key={item.id} className="flex justify-between items-center py-2.5 border-b border-gray-100 hover:bg-gray-50 px-2 rounded transition-colors text-sm">
+                          <div className="flex-1 min-w-0 pr-2">
+                            <span className="text-gray-500 text-xs block mb-0.5 truncate">{getDisplayYomi(item)}</span>
+                            <span className="font-serif font-bold text-lg text-gray-900 tracking-wide">{item.kanji}</span>
+                          </div>
+                          <div className="flex items-center gap-2 justify-end shrink-0">
+                            {record?.missCount > 0 && <span className="text-[10px] text-red-600 font-bold bg-red-50 border border-red-100 px-1.5 py-0.5 rounded shadow-sm">ミス {record.missCount}回</span>}
+                            <div className="w-6 flex justify-center shrink-0">
+                              {record?.status === 'correct' && <IconCheckCircle />}
+                              {record?.status === 'incorrect' && <IconStar />}
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-bold text-gray-900 border-b border-gray-200 pb-1.5 mb-3 tracking-widest text-sm flex items-center justify-between">
+                  <span>読み問題</span>
+                  <span className="text-xs text-gray-500 font-normal">{filteredReading.length} 件</span>
+                </h3>
+                {filteredReading.length === 0 ? <p className="text-gray-400 text-xs text-center py-4">該当問題はありません。</p> : (
+                  <ul className="space-y-1">
+                    {filteredReading.map(item => {
+                      const record = history[item.id];
+                      return (
+                        <li key={item.id} className="flex justify-between items-center py-2.5 border-b border-gray-100 hover:bg-gray-50 px-2 rounded transition-colors text-sm">
+                          <div className="flex-1 min-w-0 pr-2">
+                            <span className="font-serif font-bold text-lg text-gray-900 tracking-wide block mb-0.5">{item.kanji}</span>
+                            <span className="text-gray-600 text-xs truncate block">{getDisplayYomi(item)}</span>
+                          </div>
+                          <div className="flex items-center gap-2 justify-end shrink-0">
+                            {record?.missCount > 0 && <span className="text-[10px] text-red-600 font-bold bg-red-50 border border-red-100 px-1.5 py-0.5 rounded shadow-sm">ミス {record.missCount}回</span>}
+                            <div className="w-6 flex justify-center shrink-0">
+                              {record?.status === 'correct' && <IconCheckCircle />}
+                              {record?.status === 'incorrect' && <IconStar />}
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="min-h-screen bg-[#f8f9fa] text-gray-800 font-sans p-4 flex justify-center items-start selection:bg-gray-200">
+          <style>{`
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+            @keyframes scaleIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; } }
+            .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+            .scrollbar-thin::-webkit-scrollbar { width: 5px; }
+            .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9px; }
+          `}</style>
+
+          <div className="w-full max-w-lg bg-white border border-gray-300 mt-2 md:mt-10 mb-10 relative overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-gray-300 flex justify-between items-center bg-white">
+              <div className="w-10"></div>
+              <h1 className="text-xl tracking-widest font-bold text-gray-900">中間テスト 漢字練習</h1>
+              <button onClick={() => setView(view === 'list' ? 'quiz' : 'list')} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                {view === 'list' ? <IconX /> : <IconList />}
+              </button>
+            </div>
+
+            {view === 'list' ? renderListView() : (
+              <>
+                <div className="flex border-b border-gray-300 bg-[#fafafa]">
+                  <button className={`flex-1 py-3 text-sm tracking-widest transition-colors flex items-center justify-center gap-2 ${mode === 'writing' ? 'border-b-2 border-gray-900 font-bold bg-white text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`} onClick={() => setMode('writing')}>
+                    <IconEdit2 /> 書き問題
+                  </button>
+                  <button className={`flex-1 py-3 text-sm tracking-widest transition-colors flex items-center justify-center gap-2 ${mode === 'reading' ? 'border-b-2 border-gray-900 font-bold bg-white text-gray-900' : 'text-gray-500 hover:bg-gray-100'}`} onClick={() => setMode('reading')}>
+                    <IconType /> 読み問題
+                  </button>
+                </div>
+
+                {!currentQuestion ? renderAllClear() : (
+                  <div className="p-6 md:p-10 flex flex-col items-center min-h-[500px] relative animate-fade-in">
+                    <p className="text-gray-500 text-sm mb-6 tracking-wide text-center">
+                      {mode === 'writing' ? '下線部のひらがなを漢字で書きなさい。' : '下線部の漢字の読みをひらがなで答えなさい。'}
+                    </p>
+
+                    {renderSentence()}
+                    
+                    {result && (
+                      <div className="absolute top-[40%] left-1/2 pointer-events-none z-10 animate-scale-in">
+                        <GradeMark type={result} />
+                      </div>
+                    )}
+                    
+                    {mode === 'writing' ? (
+                      <div className="w-full mb-4">
+                        <div className="flex justify-end mb-2">
+                          <button onClick={() => setShowCanvas(!showCanvas)} className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1.5 p-1">
+                            {showCanvas ? <IconPenOff /> : <IconPenOn />}
+                            {showCanvas ? '手書きを隠す' : '手書きを開く'}
+                          </button>
+                        </div>
+                        
+                        {showCanvas && (
+                          <div className="w-full relative animate-fade-in" ref={containerRef}>
+                            <div className={`border ${showAnswer ? 'border-gray-200' : 'border-gray-400'}`}>
+                              <canvas
+                                ref={canvasRef}
+                                className={`touch-none block w-full bg-white ${showAnswer ? 'opacity-50' : 'cursor-crosshair'}`}
+                                onMouseDown={startDrawing}
+                                onMouseMove={draw}
+                                onMouseUp={stopDrawing}
+                                onMouseLeave={stopDrawing}
+                                onTouchStart={startDrawing}
+                                onTouchMove={draw}
+                                onTouchEnd={stopDrawing}
+                              />
+                            </div>
+                            {!showAnswer && (
+                              <button onClick={clearCanvas} className="absolute -top-3 -right-3 p-2 bg-white border border-gray-300 text-gray-500 hover:text-gray-800 shadow-sm">
+                                <IconRefresh />
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="w-full mb-8">
+                        <input 
+                          type="text" 
+                          value={readingInput}
+                          onChange={(e) => setReadingInput(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && !showAnswer && handleCheckReading()}
+                          className="w-full border-b-2 border-gray-300 p-4 text-2xl tracking-widest text-center focus:outline-none focus:border-gray-900 bg-transparent"
+                          placeholder="ひらがなを入力"
+                          disabled={showAnswer}
+                          autoFocus
+                        />
+                      </div>
+                    )}
+
+                    <div className="w-full mt-auto">
+                      {mode === 'writing' && !showAnswer && (
+                        <button onClick={handleShowAnswer} className="w-full py-4 bg-gray-900 text-white font-bold tracking-widest hover:bg-gray-800 shadow-md">
+                          正解を見る
+                        </button>
+                      )}
+
+                      {mode === 'writing' && showAnswer && (
+                        <div className="w-full animate-fade-in">
+                          <div className="text-center mb-6">
+                            <p className="text-sm text-gray-500 mb-1">正解</p>
+                            <p className="text-5xl font-serif font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
+                          </div>
+                          {!result && (
+                            <div className="flex gap-4 w-full">
+                              <button onClick={() => handleSelfGrade('incorrect')} className="flex-1 py-4 bg-white border-2 border-gray-300 text-gray-600 font-bold tracking-widest flex items-center justify-center gap-2"><IconX /> 間違えた</button>
+                              <button onClick={() => handleSelfGrade('correct')} className="flex-1 py-4 bg-gray-900 border-2 border-gray-900 text-white font-bold tracking-widest flex items-center justify-center gap-2 shadow-md"><IconCheck /> 正解できた</button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {mode === 'reading' && !showAnswer && (
+                        <button onClick={handleCheckReading} disabled={!readingInput.trim()} className="w-full py-4 bg-gray-900 text-white font-bold tracking-widest hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 shadow-md">
+                          判定する
+                        </button>
+                      )}
+
+                      {mode === 'reading' && showAnswer && (
+                        <div className="w-full animate-fade-in">
+                          <div className="text-center mb-6">
+                            <p className="text-sm text-gray-500 mb-1">正解</p>
+                            <p className="text-2xl font-bold tracking-widest text-gray-900">{getDisplayYomi(currentQuestion)}</p>
+                          </div>
+                          <button onClick={handleNextClick} className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3精密">
+                            次の問題へ <IconArrowRight />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
