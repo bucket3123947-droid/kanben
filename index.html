@@ -362,6 +362,7 @@
       const [history, setHistory] = useState(() => savedState?.history ?? {});
       const [excludeCorrect, setExcludeCorrect] = useState(() => savedState?.excludeCorrect ?? true);
       const [showCanvas, setShowCanvas] = useState(() => savedState?.showCanvas ?? true);
+      const [penWidth, setPenWidth] = useState(() => savedState?.penWidth ?? 8);
       const [showAnswer, setShowAnswer] = useState(false);
       const [result, setResult] = useState(null);
       const [writingRetry, setWritingRetry] = useState(false);
@@ -372,7 +373,12 @@
       const isDrawingRef = useRef(false);
       const showAnswerRef = useRef(false);
       const writingRetryRef = useRef(false);
+      const penWidthRef = useRef(penWidth);
       const [isDrawing, setIsDrawing] = useState(false);
+
+      useEffect(() => {
+        penWidthRef.current = penWidth;
+      }, [penWidth]);
 
       useEffect(() => {
         showAnswerRef.current = showAnswer;
@@ -389,9 +395,10 @@
             excludeCorrect,
             mode,
             showCanvas,
+            penWidth,
           }));
         } catch (_) {}
-      }, [history, excludeCorrect, mode, showCanvas]);
+      }, [history, excludeCorrect, mode, showCanvas, penWidth]);
 
       const getDisplayYomi = (question) => {
         if (!question || !question.yomi) return '';
@@ -441,7 +448,7 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.lineWidth = 8;
+        ctx.lineWidth = penWidthRef.current;
         ctx.strokeStyle = '#2d3748';
       };
 
@@ -473,6 +480,7 @@
         if (showAnswerRef.current && !writingRetryRef.current) return;
         const { x, y } = getCoordinates(e);
         const ctx = canvasRef.current.getContext('2d');
+        ctx.lineWidth = penWidthRef.current;
         ctx.beginPath();
         ctx.moveTo(x, y);
         isDrawingRef.current = true;
@@ -808,8 +816,25 @@
                     
                     {mode === 'writing' ? (
                       <div className="w-full mb-4">
-                        <div className="flex justify-end mb-2">
-                          <button onClick={() => setShowCanvas(!showCanvas)} className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1.5 p-1">
+                        <div className="flex justify-between items-center gap-3 mb-2">
+                          {showCanvas && (!showAnswer || writingRetry) ? (
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className="text-xs text-gray-500 shrink-0 tracking-wide">太さ</span>
+                              <input
+                                type="range"
+                                min="2"
+                                max="24"
+                                step="1"
+                                value={penWidth}
+                                onChange={(e) => setPenWidth(Number(e.target.value))}
+                                className="flex-1 min-w-0 h-1 accent-gray-900 cursor-pointer"
+                              />
+                              <span className="text-xs text-gray-600 w-6 text-right tabular-nums">{penWidth}</span>
+                            </div>
+                          ) : (
+                            <div className="flex-1" />
+                          )}
+                          <button onClick={() => setShowCanvas(!showCanvas)} className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1.5 p-1 shrink-0">
                             {showCanvas ? <IconPenOff /> : <IconPenOn />}
                             {showCanvas ? '手書きを隠す' : '手書きを開く'}
                           </button>
