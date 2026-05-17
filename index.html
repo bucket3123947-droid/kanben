@@ -650,8 +650,27 @@
           return true;
         };
 
-        const filteredWriting = writingData.filter(filterFunc);
-        const filteredReading = readingData.filter(filterFunc);
+        const getEffectiveMissCount = (id) => {
+          const record = history[id];
+          if (!record) return 0;
+          return Math.max(record.missCount, record.status === 'incorrect' ? 1 : 0);
+        };
+
+        const sortByMissCount = (list) => {
+          if (filterTab !== 'incorrect') return list;
+          return [...list].sort((a, b) => getEffectiveMissCount(b.id) - getEffectiveMissCount(a.id));
+        };
+
+        const getMissBadgeClass = (count) => {
+          if (count >= 5) return 'bg-red-900 border-red-950 text-white';
+          if (count >= 4) return 'bg-red-800 border-red-900 text-white';
+          if (count >= 3) return 'bg-red-700 border-red-800 text-white';
+          if (count >= 2) return 'bg-red-500 border-red-600 text-white';
+          return 'bg-red-100 border-red-300 text-red-800';
+        };
+
+        const filteredWriting = sortByMissCount(writingData.filter(filterFunc));
+        const filteredReading = sortByMissCount(readingData.filter(filterFunc));
 
         const countTotal = (dataList, type) => {
           return dataList.filter(item => {
@@ -723,7 +742,14 @@
                             <span className="font-bold text-lg text-gray-900 tracking-wide">{item.kanji}</span>
                           </div>
                           <div className="flex items-center gap-2 justify-end shrink-0">
-                            {record?.missCount > 0 && <span className="text-[10px] text-red-600 font-bold bg-red-50 border border-red-100 px-1.5 py-0.5 rounded shadow-sm">ミス {record.missCount}回</span>}
+                            {(() => {
+                              const miss = getEffectiveMissCount(item.id);
+                              return miss > 0 ? (
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm border ${getMissBadgeClass(miss)}`}>
+                                  ミス {miss}回
+                                </span>
+                              ) : null;
+                            })()}
                             <div className="w-6 flex justify-center shrink-0">
                               {record?.status === 'correct' && <IconCheckCircle />}
                             </div>
@@ -751,7 +777,14 @@
                             <span className="text-gray-600 text-xs truncate block">{getDisplayYomi(item)}</span>
                           </div>
                           <div className="flex items-center gap-2 justify-end shrink-0">
-                            {record?.missCount > 0 && <span className="text-[10px] text-red-600 font-bold bg-red-50 border border-red-100 px-1.5 py-0.5 rounded shadow-sm">ミス {record.missCount}回</span>}
+                            {(() => {
+                              const miss = getEffectiveMissCount(item.id);
+                              return miss > 0 ? (
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm border ${getMissBadgeClass(miss)}`}>
+                                  ミス {miss}回
+                                </span>
+                              ) : null;
+                            })()}
                             <div className="w-6 flex justify-center shrink-0">
                               {record?.status === 'correct' && <IconCheckCircle />}
                             </div>
