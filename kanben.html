@@ -539,13 +539,13 @@
       const [isDrawing, setIsDrawing] = useState(false);
       const [judgmentInfo, setJudgmentInfo] = useState(null);
       const [showPassAnswer, setShowPassAnswer] = useState(false);
+      const [passPracticeMode, setPassPracticeMode] = useState(false);
       const [retryMode, setRetryMode] = useState(false);
       const [wrongSlotIndices, setWrongSlotIndices] = useState([]);
       const [modelReady, setModelReady] = useState(false);
       const [modelError, setModelError] = useState(null);
       const [charSlots, setCharSlots] = useState([]);
       const [activeCharPage, setActiveCharPage] = useState(0);
-      const swipeStartXRef = useRef(null);
 
       useEffect(() => {
         penWidthRef.current = penWidth;
@@ -562,6 +562,11 @@
       useEffect(() => {
         wrongSlotIndicesRef.current = wrongSlotIndices;
       }, [wrongSlotIndices]);
+
+      const passPracticeModeRef = useRef(false);
+      useEffect(() => {
+        passPracticeModeRef.current = passPracticeMode;
+      }, [passPracticeMode]);
 
       useEffect(() => {
         KanjiRecognizer.load()
@@ -583,6 +588,7 @@
           });
         }
         setShowPassAnswer(false);
+        setPassPracticeMode(false);
         setRetryMode(false);
         setWrongSlotIndices([]);
         setActiveCharPage(0);
@@ -627,6 +633,7 @@
         setShowAnswer(false);
         setWritingStatus('idle');
         setShowPassAnswer(false);
+        setPassPracticeMode(false);
         setRetryMode(false);
         setWrongSlotIndices([]);
         setActiveCharPage(0);
@@ -675,8 +682,29 @@
         ctx.strokeStyle = '#2d3748';
       };
 
+      const drawGuideChar = (ctx, canvas, char) => {
+        const size = Math.min(canvas.width, canvas.height) * 0.72;
+        ctx.save();
+        ctx.fillStyle = 'rgba(180, 180, 180, 0.32)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `${size}px "Zen Kaku Gothic New", sans-serif`;
+        ctx.fillText(char, canvas.width / 2, canvas.height / 2);
+        ctx.restore();
+      };
+
+      const initCanvasWithGuide = (index, char) => {
+        initCanvasAt(index);
+        const canvas = canvasRefs.current[index];
+        if (!canvas || !char) return;
+        drawGuideChar(canvas.getContext('2d'), canvas, char);
+      };
+
       const initAllCanvases = () => {
-        charSlots.forEach((_, i) => initCanvasAt(i));
+        charSlots.forEach((ch, i) => {
+          if (passPracticeModeRef.current) initCanvasWithGuide(i, ch);
+          else initCanvasAt(i);
+        });
       };
 
       const formatJudgmentInfo = (recognitions, question) => {
@@ -772,6 +800,7 @@
           }
           gradedRef.current = true;
           setRetryMode(false);
+          setPassPracticeMode(false);
           setWrongSlotIndices([]);
           setWritingStatus('correct');
           setResult('correct');
@@ -823,7 +852,7 @@
       };
 
       const startDrawing = (e, canvasIndex) => {
-        if (gradedRef.current || passRevealedRef.current || !modelReady) return;
+        if (gradedRef.current || (passRevealedRef.current && !passPracticeModeRef.current) || !modelReady) return;
         if (retryModeRef.current && wrongSlotIndices.length > 0 && !wrongSlotIndices.includes(canvasIndex)) return;
         cancelScheduledEvaluation();
         evaluateGenerationRef.current++;
@@ -840,7 +869,7 @@
 
       const draw = (e, canvasIndex) => {
         if (!isDrawingRef.current || activeCanvasIndexRef.current !== canvasIndex) return;
-        if (gradedRef.current || passRevealedRef.current) return;
+        if (gradedRef.current || (passRevealedRef.current && !passPracticeModeRef.current)) return;
         e.preventDefault?.();
         const { x, y } = getCoordinates(e, canvasIndex);
         const ctx = canvasRefs.current[canvasIndex].getContext('2d');
@@ -858,7 +887,7 @@
       };
 
       const handleCanvasTouchStart = (e, canvasIndex) => {
-        if (gradedRef.current || passRevealedRef.current) return;
+        if (gradedRef.current || (passRevealedRef.current && !passPracticeModeRef.current)) return;
         e.preventDefault();
         startDrawing(e, canvasIndex);
       };
@@ -884,10 +913,11 @@
       useEffect(() => () => cancelScheduledEvaluation(), []);
 
       const clearCanvasAt = async (index) => {
-        if (gradedRef.current || passRevealedRef.current) return;
+        if (gradedRef.current || (passRevealedRef.current && !passPracticeModeRef.current)) return;
         cancelScheduledEvaluation();
         evaluateGenerationRef.current++;
-        initCanvasAt(index);
+        if (passPracticeModeRef.current) initCanvasWithGuide(index, charSlots[index]);
+        else initCanvasAt(index);
         if (!retryModeRef.current) {
           setResult(null);
           setWritingStatus('idle');
@@ -895,11 +925,51 @@
         await refreshJudgmentInfo();
       };
 
-      const handlePass = () => {
-        if (gradedRef.current || passRevealedRef.current || !modelReady) return;
+      const enterPassPracticeMode = () => {
+        const question = currentQuestionRef.current;
+        if (!question) return;
         cancelScheduledEvaluation();
         evaluateGenerationRef.current++;
-        evaluateHandwriting({ allowCorrect: true, allowIncorrect: true });
+
+        const expected = splitKanjiChars(question.kanji);
+        if (!passMissRecordedRef.current) {
+          passMissRecordedRef.current = true;
+          setHistory((prev) => {
+            const currentData = prev[question.id] || { missCount: 0 };
+            return {
+              ...prev,
+              [question.id]: { status: 'incorrect', missCount: currentData.missCount + 1 },
+            };
+          });
+        }
+
+        passRevealedRef.current = false;
+        setShowPassAnswer(false);
+        setPassPracticeMode(true);
+        setResult('incorrect');
+        setWritingStatus('pass_retry');
+        setRetryMode(true);
+        setWrongSlotIndices(expected.map((_, i) => i));
+        setActiveCharPage(0);
+        requestAnimationFrame(() => {
+          expected.forEach((ch, i) => initCanvasWithGuide(i, ch));
+          refreshJudgmentInfo();
+        });
+      };
+
+      const handlePass = () => {
+        if (gradedRef.current || !modelReady) return;
+        if (passPracticeMode) {
+          handlePassNext();
+          return;
+        }
+        if (retryModeRef.current) {
+          cancelScheduledEvaluation();
+          evaluateGenerationRef.current++;
+          evaluateHandwriting({ allowCorrect: true, allowIncorrect: true });
+          return;
+        }
+        enterPassPracticeMode();
       };
 
       const handlePassNext = () => {
@@ -909,20 +979,6 @@
       const goToCharPage = (index) => {
         if (index < 0 || index >= charSlots.length) return;
         setActiveCharPage(index);
-      };
-
-      const handlePageSwipeStart = (clientX) => {
-        swipeStartXRef.current = clientX;
-      };
-
-      const handlePageSwipeEnd = (clientX) => {
-        const start = swipeStartXRef.current;
-        swipeStartXRef.current = null;
-        if (start == null) return;
-        const delta = clientX - start;
-        if (Math.abs(delta) < 48) return;
-        if (delta < 0) goToCharPage(activeCharPage + 1);
-        else goToCharPage(activeCharPage - 1);
       };
 
       const getSlotPageStatus = (index) => {
@@ -1185,7 +1241,7 @@
             .canvas-draw-area { touch-action: none; overscroll-behavior: contain; -webkit-user-select: none; user-select: none; }
             .canvas-crosshair-v { position: absolute; left: 50%; top: 8%; height: 84%; border-left: 1px dashed #d1d5db; transform: translateX(-50%); pointer-events: none; }
             .canvas-crosshair-h { position: absolute; top: 50%; left: 8%; width: 84%; border-top: 1px dashed #d1d5db; transform: translateY(-50%); pointer-events: none; }
-            .handwriting-pages-viewport { overflow: hidden; width: 100%; touch-action: pan-y; }
+            .handwriting-pages-viewport { overflow: hidden; width: 100%; }
             .handwriting-pages-track { display: flex; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
             .handwriting-page { flex: 0 0 100%; width: 100%; min-width: 100%; box-sizing: border-box; padding: 0 2px; }
             .handwriting-slot-box { width: 100%; max-width: min(100%, 320px); margin-left: auto; margin-right: auto; aspect-ratio: 1 / 1; min-height: min(72vw, 320px); }
@@ -1345,11 +1401,7 @@
 
                             {renderPreviousWrongAlerts()}
 
-                            <div
-                              className="handwriting-pages-viewport"
-                              onTouchStart={(e) => charSlots.length > 1 && handlePageSwipeStart(e.touches[0].clientX)}
-                              onTouchEnd={(e) => charSlots.length > 1 && e.changedTouches[0] && handlePageSwipeEnd(e.changedTouches[0].clientX)}
-                            >
+                            <div className="handwriting-pages-viewport">
                               <div
                                 className="handwriting-pages-track"
                                 style={{ transform: `translateX(-${activeCharPage * 100}%)` }}
@@ -1358,8 +1410,9 @@
                                   const slot = judgmentInfo?.slots?.[index];
                                   const isSlotMatch = slot?.recognized === slot?.expected;
                                   const pageStatus = getSlotPageStatus(index);
-                                  const canDraw = modelReady && !gradedRef.current && !passRevealedRef.current
-                                    && (!retryMode || wrongSlotIndices.length === 0 || wrongSlotIndices.includes(index));
+                                  const canDraw = modelReady && !gradedRef.current
+                                    && (!passRevealedRef.current || passPracticeMode)
+                                    && (!retryMode || passPracticeMode || wrongSlotIndices.length === 0 || wrongSlotIndices.includes(index));
                                   return (
                                     <div key={`${currentQuestion.id}-${index}`} className="handwriting-page flex flex-col">
                                       <p className="text-xs text-gray-600 text-center mb-2 tracking-widest font-bold">
@@ -1413,9 +1466,14 @@
                                 })}
                               </div>
                             </div>
-                            {retryMode && result === 'incorrect' && !showPassAnswer && (
+                            {passPracticeMode && (
+                              <p className="text-xs text-blue-800 bg-blue-50 border border-blue-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
+                                薄く表示された正解の漢字を参考に、もう一度書いてください。
+                              </p>
+                            )}
+                            {retryMode && result === 'incorrect' && !showPassAnswer && !passPracticeMode && (
                               <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
-                                間違えた文字（赤いタブ）をもう一度書いてください。ページをめくって該当の文字へ移れます。
+                                間違えた文字（赤いタブ）をもう一度書いてください。ボタンで該当の文字へ移れます。
                               </p>
                             )}
                             {showPassAnswer && result === 'incorrect' && (
@@ -1463,7 +1521,7 @@
                           disabled={!modelReady}
                           className="w-full py-4 bg-white border-2 border-gray-300 text-gray-600 font-bold tracking-widest hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {retryMode ? '答えを見て次へ' : 'パス'}
+                          {passPracticeMode ? 'スキップして次へ' : retryMode ? '答えを見て次へ' : 'パス'}
                         </button>
                       )}
 
