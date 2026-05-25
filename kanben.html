@@ -544,6 +544,8 @@
       const [modelReady, setModelReady] = useState(false);
       const [modelError, setModelError] = useState(null);
       const [charSlots, setCharSlots] = useState([]);
+      const [activeCharPage, setActiveCharPage] = useState(0);
+      const swipeStartXRef = useRef(null);
 
       useEffect(() => {
         penWidthRef.current = penWidth;
@@ -583,6 +585,7 @@
         setShowPassAnswer(false);
         setRetryMode(false);
         setWrongSlotIndices([]);
+        setActiveCharPage(0);
         passRevealedRef.current = false;
         passMissRecordedRef.current = false;
       }, [currentQuestion, mode]);
@@ -626,6 +629,7 @@
         setShowPassAnswer(false);
         setRetryMode(false);
         setWrongSlotIndices([]);
+        setActiveCharPage(0);
         passRevealedRef.current = false;
         passMissRecordedRef.current = false;
         gradedRef.current = false;
@@ -661,7 +665,7 @@
         const container = containerRefs.current[index];
         if (!canvas || !container) return;
         canvas.width = container.clientWidth;
-        canvas.height = canvas.width;
+        canvas.height = container.clientHeight;
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -798,6 +802,7 @@
           setWritingStatus('wrong');
           setRetryMode(true);
           setWrongSlotIndices(wrongIndices);
+          if (wrongIndices.length > 0) setActiveCharPage(wrongIndices[0]);
           wrongIndices.forEach((i) => initCanvasAt(i));
 
           const canvasesAfterClear = expected.map((_, i) => canvasRefs.current[i]);
@@ -899,6 +904,54 @@
 
       const handlePassNext = () => {
         moveToNextQuestion(history);
+      };
+
+      const goToCharPage = (index) => {
+        if (index < 0 || index >= charSlots.length) return;
+        setActiveCharPage(index);
+      };
+
+      const handlePageSwipeStart = (clientX) => {
+        swipeStartXRef.current = clientX;
+      };
+
+      const handlePageSwipeEnd = (clientX) => {
+        const start = swipeStartXRef.current;
+        swipeStartXRef.current = null;
+        if (start == null) return;
+        const delta = clientX - start;
+        if (Math.abs(delta) < 48) return;
+        if (delta < 0) goToCharPage(activeCharPage + 1);
+        else goToCharPage(activeCharPage - 1);
+      };
+
+      const getSlotPageStatus = (index) => {
+        const slot = judgmentInfo?.slots?.[index];
+        if (!slot) return 'pending';
+        if (slot.recognized === slot.expected && slot.recognized) return 'correct';
+        if (wrongSlotIndices.includes(index)) return 'wrong';
+        if (result === 'incorrect' && slot.recognized && slot.recognized !== slot.expected) return 'wrong';
+        if (slot.recognized && slot.recognized !== slot.expected) return 'wrong';
+        return 'pending';
+      };
+
+      const renderPreviousWrongAlerts = () => {
+        if (!judgmentInfo || activeCharPage <= 0) return null;
+        const alerts = judgmentInfo.slots
+          .slice(0, activeCharPage)
+          .map((slot, i) => ({ slot, i }))
+          .filter(({ i }) => getSlotPageStatus(i) === 'wrong');
+        if (alerts.length === 0) return null;
+        return (
+          <div className="mb-3 space-y-1.5">
+            {alerts.map(({ slot, i }) => (
+              <p key={i} className="text-xs text-red-800 bg-red-50 border border-red-200 rounded px-3 py-2 tracking-wide">
+                <span className="font-bold">{i + 1}文字目「{slot.expected}」</span>
+                は不正解でした（認識: {slot.recognized ?? '—'}）
+              </p>
+            ))}
+          </div>
+        );
       };
 
       const handleCheckReading = () => {
@@ -1132,6 +1185,10 @@
             .canvas-draw-area { touch-action: none; overscroll-behavior: contain; -webkit-user-select: none; user-select: none; }
             .canvas-crosshair-v { position: absolute; left: 50%; top: 8%; height: 84%; border-left: 1px dashed #d1d5db; transform: translateX(-50%); pointer-events: none; }
             .canvas-crosshair-h { position: absolute; top: 50%; left: 8%; width: 84%; border-top: 1px dashed #d1d5db; transform: translateY(-50%); pointer-events: none; }
+            .handwriting-pages-viewport { overflow: hidden; width: 100%; touch-action: pan-y; }
+            .handwriting-pages-track { display: flex; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+            .handwriting-page { flex: 0 0 100%; width: 100%; min-width: 100%; box-sizing: border-box; padding: 0 2px; }
+            .handwriting-slot-box { width: 100%; max-width: min(100%, 320px); margin-left: auto; margin-right: auto; aspect-ratio: 1 / 1; min-height: min(72vw, 320px); }
           `}</style>
 
           <div className="w-full max-w-lg bg-white border border-gray-300 mt-2 md:mt-10 mb-10 relative overflow-hidden shadow-sm">
@@ -1236,64 +1293,129 @@
                                 </p>
                               </div>
                             )}
-                            <div className={`grid gap-3 ${charSlots.length === 1 ? 'grid-cols-1' : charSlots.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-                              {charSlots.map((char, index) => {
-                                const slot = judgmentInfo?.slots?.[index];
-                                const isSlotMatch = slot?.recognized === slot?.expected;
-                                return (
-                                  <div key={`${currentQuestion.id}-${index}`} className="flex flex-col">
-                                    <p className="text-[10px] text-gray-500 text-center mb-1 tracking-widest">
-                                      {index + 1}文字目
-                                    </p>
-                                    <div
-                                      ref={(el) => { containerRefs.current[index] = el; }}
-                                      className={`relative border overflow-hidden ${
-                                        result === 'correct' ? 'border-green-400'
-                                          : wrongSlotIndices.includes(index) ? 'border-red-400'
-                                          : result === 'incorrect' ? 'border-blue-400'
-                                          : 'border-gray-400'
+
+                            {charSlots.length > 1 && (
+                              <div className="flex flex-wrap gap-1.5 justify-center mb-3">
+                                {charSlots.map((char, index) => {
+                                  const status = getSlotPageStatus(index);
+                                  const isActive = index === activeCharPage;
+                                  return (
+                                    <button
+                                      key={`tab-${index}`}
+                                      type="button"
+                                      onClick={() => goToCharPage(index)}
+                                      className={`text-[10px] font-bold px-2 py-1 rounded border tracking-widest transition-colors ${
+                                        isActive ? 'border-gray-900 bg-gray-900 text-white'
+                                          : status === 'wrong' ? 'border-red-400 bg-red-50 text-red-800'
+                                          : status === 'correct' ? 'border-green-400 bg-green-50 text-green-800'
+                                          : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
                                       }`}
                                     >
-                                      <div className="absolute inset-0 z-[1] pointer-events-none">
-                                        <span className="canvas-crosshair-v" />
-                                        <span className="canvas-crosshair-h" />
-                                      </div>
-                                      <canvas
-                                        ref={(el) => { canvasRefs.current[index] = el; }}
-                                        className={`relative z-[2] block w-full aspect-square bg-white ${result === 'correct' ? 'opacity-70' : modelReady ? 'cursor-crosshair' : 'cursor-not-allowed opacity-60'}`}
-                                        onMouseDown={(e) => startDrawing(e, index)}
-                                        onMouseMove={(e) => draw(e, index)}
-                                        onMouseUp={() => stopDrawing(index)}
-                                        onMouseLeave={() => stopDrawing(index)}
-                                        onTouchStart={(e) => handleCanvasTouchStart(e, index)}
-                                        onTouchMove={(e) => handleCanvasTouchMove(e, index)}
-                                        onTouchEnd={(e) => handleCanvasTouchEnd(e, index)}
-                                        onTouchCancel={(e) => handleCanvasTouchEnd(e, index)}
-                                      />
-                                    </div>
-                                    <p className={`text-xs text-center mt-1.5 tracking-widest tabular-nums ${isSlotMatch ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
-                                      認識: {slot?.recognized ?? '—'}
-                                      {slot?.confidence != null && (
-                                        <span className="text-[10px] text-gray-500 ml-1">({slot.confidence}%)</span>
-                                      )}
-                                    </p>
-                                    {result !== 'correct' && !showPassAnswer && (
-                                      <button
-                                        type="button"
-                                        onClick={() => clearCanvasAt(index)}
-                                        disabled={!modelReady}
-                                        className="mt-1 w-full py-1.5 text-[11px] text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                                      {index + 1}文字目
+                                      {status === 'wrong' ? ' ×' : status === 'correct' ? ' ✓' : ''}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                            {charSlots.length > 1 && (
+                              <div className="flex items-center justify-between gap-2 mb-3">
+                                <button
+                                  type="button"
+                                  onClick={() => goToCharPage(activeCharPage - 1)}
+                                  disabled={activeCharPage === 0}
+                                  className="flex-1 py-2 text-xs font-bold tracking-widest border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed rounded"
+                                >
+                                  ‹ 前の文字
+                                </button>
+                                <span className="text-xs text-gray-600 font-bold tabular-nums shrink-0 px-1">
+                                  {activeCharPage + 1} / {charSlots.length}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => goToCharPage(activeCharPage + 1)}
+                                  disabled={activeCharPage >= charSlots.length - 1}
+                                  className="flex-1 py-2 text-xs font-bold tracking-widest border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed rounded"
+                                >
+                                  次の文字 ›
+                                </button>
+                              </div>
+                            )}
+
+                            {renderPreviousWrongAlerts()}
+
+                            <div
+                              className="handwriting-pages-viewport"
+                              onTouchStart={(e) => charSlots.length > 1 && handlePageSwipeStart(e.touches[0].clientX)}
+                              onTouchEnd={(e) => charSlots.length > 1 && e.changedTouches[0] && handlePageSwipeEnd(e.changedTouches[0].clientX)}
+                            >
+                              <div
+                                className="handwriting-pages-track"
+                                style={{ transform: `translateX(-${activeCharPage * 100}%)` }}
+                              >
+                                {charSlots.map((char, index) => {
+                                  const slot = judgmentInfo?.slots?.[index];
+                                  const isSlotMatch = slot?.recognized === slot?.expected;
+                                  const pageStatus = getSlotPageStatus(index);
+                                  const canDraw = modelReady && !gradedRef.current && !passRevealedRef.current
+                                    && (!retryMode || wrongSlotIndices.length === 0 || wrongSlotIndices.includes(index));
+                                  return (
+                                    <div key={`${currentQuestion.id}-${index}`} className="handwriting-page flex flex-col">
+                                      <p className="text-xs text-gray-600 text-center mb-2 tracking-widest font-bold">
+                                        {charSlots.length > 1 ? `${index + 1}文字目：` : ''}
+                                        <span className="text-lg text-gray-900">{char}</span>
+                                      </p>
+                                      <div
+                                        ref={(el) => { containerRefs.current[index] = el; }}
+                                        className={`handwriting-slot-box relative border overflow-hidden ${
+                                          result === 'correct' ? 'border-green-400'
+                                            : pageStatus === 'wrong' ? 'border-red-400'
+                                            : index === activeCharPage ? 'border-gray-900'
+                                            : 'border-gray-400'
+                                        }`}
                                       >
-                                        書き直し
-                                      </button>
-                                    )}
-                                  </div>
-                                );
-                              })}
+                                        <div className="absolute inset-0 z-[1] pointer-events-none">
+                                          <span className="canvas-crosshair-v" />
+                                          <span className="canvas-crosshair-h" />
+                                        </div>
+                                        <canvas
+                                          ref={(el) => { canvasRefs.current[index] = el; }}
+                                          className={`relative z-[2] block w-full h-full bg-white ${result === 'correct' ? 'opacity-70' : canDraw ? 'cursor-crosshair' : 'cursor-not-allowed opacity-60'}`}
+                                          onMouseDown={(e) => canDraw && startDrawing(e, index)}
+                                          onMouseMove={(e) => draw(e, index)}
+                                          onMouseUp={() => stopDrawing(index)}
+                                          onMouseLeave={() => stopDrawing(index)}
+                                          onTouchStart={(e) => canDraw && handleCanvasTouchStart(e, index)}
+                                          onTouchMove={(e) => handleCanvasTouchMove(e, index)}
+                                          onTouchEnd={(e) => handleCanvasTouchEnd(e, index)}
+                                          onTouchCancel={(e) => handleCanvasTouchEnd(e, index)}
+                                        />
+                                      </div>
+                                      <p className={`text-xs text-center mt-2 tracking-widest tabular-nums ${isSlotMatch ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
+                                        認識: {slot?.recognized ?? '—'}
+                                        {slot?.confidence != null && (
+                                          <span className="text-[10px] text-gray-500 ml-1">({slot.confidence}%)</span>
+                                        )}
+                                      </p>
+                                      {index === activeCharPage && result !== 'correct' && !showPassAnswer && (
+                                        <button
+                                          type="button"
+                                          onClick={() => clearCanvasAt(index)}
+                                          disabled={!modelReady}
+                                          className="mt-2 w-full max-w-[320px] mx-auto py-2 text-[11px] text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                          書き直し
+                                        </button>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
                             {retryMode && result === 'incorrect' && !showPassAnswer && (
                               <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
-                                間違えた文字をもう一度書いてください。
+                                間違えた文字（赤いタブ）をもう一度書いてください。ページをめくって該当の文字へ移れます。
                               </p>
                             )}
                             {showPassAnswer && result === 'incorrect' && (
