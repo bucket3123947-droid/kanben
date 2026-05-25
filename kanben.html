@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="app-build" content="retry-blue-mark-only">
+  <meta name="app-build" content="retry-blue-all-chars">
   <title>漢字練習</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -731,6 +731,7 @@
       const evaluateGenerationRef = useRef(0);
       const retryModeRef = useRef(false);
       const wrongSlotIndicesRef = useRef([]);
+      const retryCompletingRef = useRef(false);
       const EVALUATE_DELAY_MS = 500;
       const [isDrawing, setIsDrawing] = useState(false);
       const [judgmentInfo, setJudgmentInfo] = useState(null);
@@ -763,20 +764,21 @@
         }, 1000);
       };
 
-      const showSlotCorrectMarkBriefly = () => {
+      const completeRetrySuccess = () => {
+        if (retryCompletingRef.current) return;
+        retryCompletingRef.current = true;
+        cancelScheduledEvaluation();
         clearResultMarkTimer();
+        setRetryMode(false);
+        setWrongSlotIndices([]);
         setResult('slot-correct');
         resultMarkTimerRef.current = setTimeout(() => {
+          retryCompletingRef.current = false;
           setResult(null);
           resultMarkTimerRef.current = null;
+          moveToNextQuestion(history);
         }, 1000);
       };
-
-      const isRetrySlotCorrect = (recognitions, canvases, expected, index) => (
-        recognitions[index] !== null
-        && recognitions[index].char === expected[index]
-        && KanjiRecognizer.canvasHasInk(canvases[index])
-      );
 
       useEffect(() => {
         retryModeRef.current = retryMode;
@@ -888,6 +890,7 @@
         passRevealedRef.current = false;
         passMissRecordedRef.current = false;
         gradedRef.current = false;
+        retryCompletingRef.current = false;
         cancelScheduledEvaluation();
         setReadingInput('');
         
@@ -1039,26 +1042,21 @@
           return;
         }
 
-        if (retryModeRef.current && (allowCorrect || allowIncorrect)) {
-          const wrongIndices = wrongSlotIndicesRef.current;
-          if (wrongIndices.length === 0) return;
-
-          const slotCorrect = (i) => isRetrySlotCorrect(recognitions, canvases, expected, i);
-          const allWrongFixed = wrongIndices.every(slotCorrect);
-
-          if (allowCorrect && wrongIndices.some(slotCorrect)) {
-            showSlotCorrectMarkBriefly();
+        if (retryModeRef.current) {
+          if (allowCorrect && allMatch && allHaveInk) {
+            completeRetrySuccess();
+            return;
           }
-
           if (allowIncorrect) {
-            if (allWrongFixed) {
-              moveToNextQuestion(history);
+            if (allMatch && allHaveInk) {
+              completeRetrySuccess();
             } else {
               passRevealedRef.current = true;
               setShowPassAnswer(true);
             }
+            return;
           }
-          return;
+          if (allowCorrect) return;
         }
 
         if (allowCorrect && !gradedRef.current) {
