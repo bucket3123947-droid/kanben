@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="app-build" content="retry-slot-mark">
+  <meta name="app-build" content="retry-blue-mark-only">
   <title>漢字練習</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -731,7 +731,6 @@
       const evaluateGenerationRef = useRef(0);
       const retryModeRef = useRef(false);
       const wrongSlotIndicesRef = useRef([]);
-      const retrySlotFixedRef = useRef(new Set());
       const EVALUATE_DELAY_MS = 500;
       const [isDrawing, setIsDrawing] = useState(false);
       const [judgmentInfo, setJudgmentInfo] = useState(null);
@@ -773,9 +772,11 @@
         }, 1000);
       };
 
-      const resetRetrySlotProgress = () => {
-        retrySlotFixedRef.current = new Set();
-      };
+      const isRetrySlotCorrect = (recognitions, canvases, expected, index) => (
+        recognitions[index] !== null
+        && recognitions[index].char === expected[index]
+        && KanjiRecognizer.canvasHasInk(canvases[index])
+      );
 
       useEffect(() => {
         retryModeRef.current = retryMode;
@@ -816,7 +817,6 @@
         setActiveCharPage(0);
         passRevealedRef.current = false;
         passMissRecordedRef.current = false;
-        resetRetrySlotProgress();
       }, [currentQuestion, mode]);
 
       useEffect(() => {
@@ -849,7 +849,6 @@
         setPassPracticeMode(false);
         setRetryMode(false);
         setWrongSlotIndices([]);
-        resetRetrySlotProgress();
         passRevealedRef.current = false;
         passMissRecordedRef.current = false;
         gradedRef.current = false;
@@ -885,7 +884,6 @@
         setPassPracticeMode(false);
         setRetryMode(false);
         setWrongSlotIndices([]);
-        resetRetrySlotProgress();
         setActiveCharPage(0);
         passRevealedRef.current = false;
         passMissRecordedRef.current = false;
@@ -1041,31 +1039,30 @@
           return;
         }
 
-        if (allowCorrect && !gradedRef.current) {
-          if (retryModeRef.current) {
-            const wrongIndices = wrongSlotIndicesRef.current;
-            if (wrongIndices.length === 0) return;
+        if (retryModeRef.current && (allowCorrect || allowIncorrect)) {
+          const wrongIndices = wrongSlotIndicesRef.current;
+          if (wrongIndices.length === 0) return;
 
-            const fixedIndices = wrongIndices.filter(
-              (i) => recognitions[i] !== null
-                && recognitions[i].char === expected[i]
-                && KanjiRecognizer.canvasHasInk(canvases[i])
-            );
-            const allWrongFixed = fixedIndices.length === wrongIndices.length;
+          const slotCorrect = (i) => isRetrySlotCorrect(recognitions, canvases, expected, i);
+          const allWrongFixed = wrongIndices.every(slotCorrect);
 
-            if (!allWrongFixed) {
-              const newlyFixed = fixedIndices.filter((i) => !retrySlotFixedRef.current.has(i));
-              if (newlyFixed.length > 0) {
-                newlyFixed.forEach((i) => retrySlotFixedRef.current.add(i));
-                showSlotCorrectMarkBriefly();
-              }
-              return;
-            }
-
-            resetRetrySlotProgress();
-          } else if (!allMatch) {
-            return;
+          if (allowCorrect && wrongIndices.some(slotCorrect)) {
+            showSlotCorrectMarkBriefly();
           }
+
+          if (allowIncorrect) {
+            if (allWrongFixed) {
+              moveToNextQuestion(history);
+            } else {
+              passRevealedRef.current = true;
+              setShowPassAnswer(true);
+            }
+          }
+          return;
+        }
+
+        if (allowCorrect && !gradedRef.current) {
+          if (!allMatch) return;
           gradedRef.current = true;
           setRetryMode(false);
           setPassPracticeMode(false);
@@ -1085,12 +1082,6 @@
         }
 
         if (allowIncorrect && (!allMatch || !allHaveInk)) {
-          if (retryModeRef.current) {
-            passRevealedRef.current = true;
-            setShowPassAnswer(true);
-            return;
-          }
-
           const wrongIndices = expected
             .map((ch, i) => (recognitions[i]?.char === ch ? -1 : i))
             .filter((i) => i >= 0);
@@ -1099,7 +1090,6 @@
           setWritingStatus('wrong');
           setRetryMode(true);
           setWrongSlotIndices(wrongIndices);
-          resetRetrySlotProgress();
           if (wrongIndices.length > 0) setActiveCharPage(wrongIndices[0]);
           wrongIndices.forEach((i) => initCanvasAt(i));
 
@@ -1192,9 +1182,7 @@
         evaluateGenerationRef.current++;
         if (passPracticeModeRef.current) initCanvasWithGuide(index, charSlots[index]);
         else initCanvasAt(index);
-        if (retryModeRef.current) {
-          retrySlotFixedRef.current.delete(index);
-        } else {
+        if (!retryModeRef.current) {
           setWritingStatus('idle');
         }
         await refreshJudgmentInfo();
@@ -1226,7 +1214,6 @@
         setWritingStatus('pass_retry');
         setRetryMode(true);
         setWrongSlotIndices(expected.map((_, i) => i));
-        resetRetrySlotProgress();
         setActiveCharPage(0);
         requestAnimationFrame(() => {
           expected.forEach((ch, i) => initCanvasWithGuide(i, ch));
