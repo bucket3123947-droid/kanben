@@ -484,6 +484,9 @@
     const IconPenOff = () => (
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 2 20 20"/><path d="M10 10 2.5 17.5 6 21 14 14"/><path d="m14 4 6 6"/><path d="m15.5 8.5 5-5a2.828 2.828 0 1 0-4-4l-5 5"/></svg>
     );
+    const IconSettings = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    );
 
     const GradeMark = ({ type }) => {
       if (type === 'correct') {
@@ -515,7 +518,8 @@
         () => savedState?.hideRecoveredFromIncorrect ?? true
       );
       const [showCanvas, setShowCanvas] = useState(() => savedState?.showCanvas ?? true);
-      const [penWidth, setPenWidth] = useState(() => savedState?.penWidth ?? 8);
+      const [penWidth, setPenWidth] = useState(() => savedState?.penWidth ?? 4);
+      const [showSettings, setShowSettings] = useState(false);
       const [showAnswer, setShowAnswer] = useState(false);
       const [result, setResult] = useState(null);
       const [writingStatus, setWritingStatus] = useState('idle');
@@ -689,7 +693,8 @@
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `${size}px "Zen Kaku Gothic New", sans-serif`;
-        ctx.fillText(char, canvas.width / 2, canvas.height / 2);
+        const guideY = canvas.height / 2 - canvas.height * 0.06;
+        ctx.fillText(char, canvas.width / 2, guideY);
         ctx.restore();
       };
 
@@ -991,25 +996,6 @@
         return 'pending';
       };
 
-      const renderPreviousWrongAlerts = () => {
-        if (!judgmentInfo || activeCharPage <= 0) return null;
-        const alerts = judgmentInfo.slots
-          .slice(0, activeCharPage)
-          .map((slot, i) => ({ slot, i }))
-          .filter(({ i }) => getSlotPageStatus(i) === 'wrong');
-        if (alerts.length === 0) return null;
-        return (
-          <div className="mb-3 space-y-1.5">
-            {alerts.map(({ slot, i }) => (
-              <p key={i} className="text-xs text-red-800 bg-red-50 border border-red-200 rounded px-3 py-2 tracking-wide">
-                <span className="font-bold">{i + 1}文字目「{slot.expected}」</span>
-                は不正解でした（認識: {slot.recognized ?? '—'}）
-              </p>
-            ))}
-          </div>
-        );
-      };
-
       const handleCheckReading = () => {
         const normalizedInput = readingInput.trim().replace(/[\s　]/g, '');
         const isCorrect = Array.isArray(currentQuestion.yomi) 
@@ -1229,7 +1215,7 @@
       };
 
       return (
-        <div className="min-h-screen bg-[#f8f9fa] text-gray-800 p-4 flex justify-center items-start selection:bg-gray-200">
+        <div className="min-h-[100dvh] bg-[#f8f9fa] text-gray-800 p-2 md:p-4 flex justify-center items-start selection:bg-gray-200">
           <style>{`
             * { font-family: 'Zen Kaku Gothic New', sans-serif; }
             @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -1244,17 +1230,52 @@
             .handwriting-pages-viewport { overflow: hidden; width: 100%; }
             .handwriting-pages-track { display: flex; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
             .handwriting-page { flex: 0 0 100%; width: 100%; min-width: 100%; box-sizing: border-box; padding: 0 2px; }
-            .handwriting-slot-box { width: 100%; max-width: min(100%, 320px); margin-left: auto; margin-right: auto; aspect-ratio: 1 / 1; min-height: min(72vw, 320px); }
+            .handwriting-slot-box {
+              width: 100%;
+              max-width: min(86vw, 280px);
+              margin-left: auto;
+              margin-right: auto;
+              aspect-ratio: 1 / 1;
+              height: min(56vw, calc(100dvh - 22rem), 240px);
+              max-height: min(56vw, calc(100dvh - 22rem), 240px);
+            }
+            .app-shell { max-height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+            .app-shell-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
           `}</style>
 
-          <div className="w-full max-w-lg bg-white border border-gray-300 mt-2 md:mt-10 mb-10 relative overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-gray-300 flex justify-between items-center bg-white">
-              <div className="w-10"></div>
-              <h1 className="text-xl tracking-widest font-bold text-gray-900">中間テスト 漢字練習</h1>
-              <button onClick={() => setView(view === 'list' ? 'quiz' : 'list')} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+          <div className="w-full max-w-lg bg-white border border-gray-300 mt-0 md:mt-4 mb-2 md:mb-6 relative overflow-hidden shadow-sm app-shell mx-auto">
+            <div className="p-3 md:p-4 border-b border-gray-300 flex justify-between items-center bg-white relative shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowSettings((v) => !v)}
+                className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors shrink-0"
+                aria-label="設定"
+              >
+                <IconSettings />
+              </button>
+              <h1 className="flex-1 text-center text-lg md:text-xl tracking-widest font-bold text-gray-900 px-1">中間テスト 漢字練習</h1>
+              <button onClick={() => { setShowSettings(false); setView(view === 'list' ? 'quiz' : 'list'); }} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                 {view === 'list' ? <IconX /> : <IconList />}
               </button>
+              {showSettings && (
+                <div className="absolute left-0 right-0 top-full z-40 bg-white border-b border-gray-300 shadow-md px-4 py-3">
+                  <label className="flex items-center gap-3">
+                    <span className="text-xs text-gray-600 font-bold tracking-wide shrink-0 w-14">ペンの太さ</span>
+                    <input
+                      type="range"
+                      min="2"
+                      max="24"
+                      step="1"
+                      value={penWidth}
+                      onChange={(e) => setPenWidth(Number(e.target.value))}
+                      className="flex-1 min-w-0 h-1 accent-gray-900 cursor-pointer"
+                    />
+                    <span className="text-xs text-gray-800 font-bold tabular-nums w-6 text-right">{penWidth}</span>
+                  </label>
+                </div>
+              )}
             </div>
+            <div className="app-shell-body">
 
             {view === 'list' ? renderListView() : (
               <>
@@ -1268,7 +1289,7 @@
                 </div>
 
                 {!currentQuestion ? renderAllClear() : (
-                  <div className="p-6 md:p-10 flex flex-col items-center min-h-[500px] relative animate-fade-in">
+                  <div className="p-4 md:p-8 flex flex-col items-center min-h-0 relative animate-fade-in">
                     {(() => {
                       const miss = getEffectiveMissCount(currentQuestion.id);
                       if (miss <= 0) return null;
@@ -1301,25 +1322,8 @@
                     )}
                     
                     {mode === 'writing' ? (
-                      <div className="w-full mb-4">
-                        <div className="flex justify-between items-center gap-3 mb-2">
-                          {showCanvas && result !== 'correct' && !showPassAnswer ? (
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <span className="text-xs text-gray-500 shrink-0 tracking-wide">太さ</span>
-                              <input
-                                type="range"
-                                min="2"
-                                max="24"
-                                step="1"
-                                value={penWidth}
-                                onChange={(e) => setPenWidth(Number(e.target.value))}
-                                className="flex-1 min-w-0 h-1 accent-gray-900 cursor-pointer"
-                              />
-                              <span className="text-xs text-gray-600 w-6 text-right tabular-nums">{penWidth}</span>
-                            </div>
-                          ) : (
-                            <div className="flex-1" />
-                          )}
+                      <div className="w-full mb-3">
+                        <div className="flex justify-end items-center mb-2">
                           <button onClick={() => setShowCanvas(!showCanvas)} className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1.5 p-1 shrink-0">
                             {showCanvas ? <IconPenOff /> : <IconPenOn />}
                             {showCanvas ? '手書きを隠す' : '手書きを開く'}
@@ -1338,18 +1342,6 @@
                                 {modelError}
                               </p>
                             )}
-                            {judgmentInfo && (
-                              <div className="mb-3 text-center pointer-events-none">
-                                <p className="text-[10px] text-gray-400 tracking-wide mb-0.5">正解</p>
-                                <p className="text-lg font-bold text-gray-900 tracking-widest">
-                                  {judgmentInfo.targetKanji}
-                                  {judgmentInfo.yomi && (
-                                    <span className="text-sm font-normal text-gray-500 ml-1">（{judgmentInfo.yomi}）</span>
-                                  )}
-                                </p>
-                              </div>
-                            )}
-
                             {charSlots.length > 1 && (
                               <div className="flex flex-wrap gap-1.5 justify-center mb-3">
                                 {charSlots.map((char, index) => {
@@ -1399,8 +1391,6 @@
                               </div>
                             )}
 
-                            {renderPreviousWrongAlerts()}
-
                             <div className="handwriting-pages-viewport">
                               <div
                                 className="handwriting-pages-track"
@@ -1445,18 +1435,12 @@
                                           onTouchCancel={(e) => handleCanvasTouchEnd(e, index)}
                                         />
                                       </div>
-                                      <p className={`text-xs text-center mt-2 tracking-widest tabular-nums ${isSlotMatch ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
-                                        認識: {slot?.recognized ?? '—'}
-                                        {slot?.confidence != null && (
-                                          <span className="text-[10px] text-gray-500 ml-1">({slot.confidence}%)</span>
-                                        )}
-                                      </p>
                                       {index === activeCharPage && result !== 'correct' && !showPassAnswer && (
                                         <button
                                           type="button"
                                           onClick={() => clearCanvasAt(index)}
                                           disabled={!modelReady}
-                                          className="mt-2 w-full max-w-[320px] mx-auto py-2 text-[11px] text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                                          className="mt-2 w-full max-w-[min(86vw,280px)] mx-auto py-2 text-[11px] text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                           書き直し
                                         </button>
@@ -1466,21 +1450,6 @@
                                 })}
                               </div>
                             </div>
-                            {passPracticeMode && (
-                              <p className="text-xs text-blue-800 bg-blue-50 border border-blue-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
-                                薄く表示された正解の漢字を参考に、もう一度書いてください。
-                              </p>
-                            )}
-                            {retryMode && result === 'incorrect' && !showPassAnswer && !passPracticeMode && (
-                              <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
-                                間違えた文字（赤いタブ）をもう一度書いてください。ボタンで該当の文字へ移れます。
-                              </p>
-                            )}
-                            {showPassAnswer && result === 'incorrect' && (
-                              <p className="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
-                                不正解です。正解は「{currentQuestion.kanji}」です。
-                              </p>
-                            )}
                           </div>
                         )}
                       </div>
@@ -1501,18 +1470,12 @@
 
                     <div className="w-full mt-auto">
                       {mode === 'writing' && showPassAnswer && result === 'incorrect' && (
-                        <div className="w-full animate-fade-in mb-4">
-                          <div className="text-center mb-4">
-                            <p className="text-sm text-gray-500 mb-1">正解</p>
-                            <p className="text-5xl font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
-                          </div>
-                          <button
-                            onClick={handlePassNext}
-                            className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3"
-                          >
-                            次の問題へ <IconArrowRight />
-                          </button>
-                        </div>
+                        <button
+                          onClick={handlePassNext}
+                          className="w-full py-4 mb-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3"
+                        >
+                          次の問題へ <IconArrowRight />
+                        </button>
                       )}
 
                       {mode === 'writing' && result !== 'correct' && !showPassAnswer && (
@@ -1532,21 +1495,16 @@
                       )}
 
                       {mode === 'reading' && showAnswer && (
-                        <div className="w-full animate-fade-in">
-                          <div className="text-center mb-6">
-                            <p className="text-sm text-gray-500 mb-1">正解</p>
-                            <p className="text-2xl font-bold tracking-widest text-gray-900">{getDisplayYomi(currentQuestion)}</p>
-                          </div>
-                          <button onClick={handleNextClick} className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3">
-                            次の問題へ <IconArrowRight />
-                          </button>
-                        </div>
+                        <button onClick={handleNextClick} className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3">
+                          次の問題へ <IconArrowRight />
+                        </button>
                       )}
                     </div>
                   </div>
                 )}
               </>
             )}
+            </div>
           </div>
         </div>
       );
