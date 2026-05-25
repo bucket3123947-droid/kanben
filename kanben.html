@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>中間テスト 漢字練習</title>
+  <title>漢字練習</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +36,7 @@
     };
 
     // --- データ定義（文中の単語として出題） ---
-    const writingDataRaw = [
+    const midTermWritingRaw = [
       { kanji: '自負', yomi: 'じふ', sentence: 'プロとしての{target}を持つ。' },
       { kanji: '知見', yomi: 'ちけん', sentence: '専門的な{target}を深める。' },
       { kanji: '画期', yomi: 'かっき', sentence: 'それは{target}的な大発明だった。' },
@@ -237,7 +237,7 @@
       { kanji: '体系', yomi: 'たいけい', sentence: '知識を{target}化する。' }
     ];
 
-    const readingDataRaw = [
+    const midTermReadingRaw = [
       { kanji: '所作', yomi: ['しょさ'], sentence: '美しい{target}を身につける。' },
       { kanji: '工面', yomi: ['くめん'], sentence: '旅行の費用を{target}する。' },
       { kanji: '委', yomi: ['ゆだねる'], sentence: '最終的な判断を専門家に{target}ねる。' },
@@ -299,8 +299,157 @@
       { kanji: '至極', yomi: ['しごく'], sentence: '{target}当然の報いだ。' }
     ];
 
-    const writingData = writingDataRaw.map((item, idx) => ({ ...item, id: `w${idx}` }));
-    const readingData = readingDataRaw.map((item, idx) => ({ ...item, id: `r${idx}` }));
+    const final1WritingRaw = [
+      { kanji: '示唆', yomi: 'しさつ', sentence: '新しい考えを{target}する。' },
+      { kanji: '浸透', yomi: 'しんとう', sentence: '雨が土壌に{target}する。' },
+      { kanji: '媒介', yomi: 'ばいかい', sentence: '交渉の{target}となる。' },
+      { kanji: '喚起', yomi: 'かんき', sentence: '記憶を{target}する。' },
+      { kanji: '顕著', yomi: 'けんちょ', sentence: '{target}な成果を上げる。' },
+      { kanji: '把握', yomi: 'はあく', sentence: '状況を{target}する。' },
+      { kanji: '駆使', yomi: 'くし', sentence: '言葉を巧みに{target}する。' },
+      { kanji: '頻繁', yomi: 'ひんぱん', sentence: '{target}に訪問する。' },
+      { kanji: '輪郭', yomi: 'りんかく', sentence: '山の{target}が見える。' },
+      { kanji: '端的', yomi: 'たんてき', sentence: '{target}に結論を述べる。' },
+      { kanji: '過剰', yomi: 'かじょう', sentence: '{target}な反応を示す。' },
+      { kanji: '膨大', yomi: 'ぼうだい', sentence: '{target}な資料が残る。' },
+      { kanji: '遭遇', yomi: 'そうぐう', sentence: '難局に{target}する。' },
+      { kanji: '貢献', yomi: 'こうけん', sentence: '社会に{target}する。' },
+      { kanji: '排除', yomi: 'はいじょ', sentence: '異分子を{target}する。' },
+      { kanji: '還元', yomi: 'かんげん', sentence: '利益を株主に{target}する。' },
+      { kanji: '崩壊', yomi: 'ほうかい', sentence: '体制が{target}する。' },
+      { kanji: '循環', yomi: 'じゅんかん', sentence: '血液が{target}する。' },
+      { kanji: '契機', yomi: 'けいき', sentence: '成長の{target}を迎える。' },
+      { kanji: '依拠', yomi: 'いきょ', sentence: '伝統に{target}する。' },
+      { kanji: '喪失', yomi: 'そうしつ', sentence: '自信を{target}する。' },
+      { kanji: '放棄', yomi: 'ほうき', sentence: '権利を{target}する。' },
+      { kanji: '犠牲', yomi: 'ぎせい', sentence: '{target}になった人々。' },
+      { kanji: '普遍', yomi: 'ふへん', sentence: '{target}的な価値観。' },
+      { kanji: '依然', yomi: 'いぜん', sentence: '{target}として強い。' },
+      { kanji: '享受', yomi: 'きょうじゅ', sentence: '平穏を{target}する。' },
+      { kanji: '眺め', yomi: 'ながめ', sentence: '海の{target}に浸る。' },
+      { kanji: '維持', yomi: 'いじ', sentence: '平和を{target}する。' },
+      { kanji: '衝動', yomi: 'しょうどう', sentence: '{target}的な行動。' },
+      { kanji: '獲得', yomi: 'かくとく', sentence: '資格を{target}する。' },
+      { kanji: '交錯', yomi: 'こうさく', sentence: '意見が{target}する。' },
+      { kanji: '枯渇', yomi: 'こかつ', sentence: '資源が{target}する。' },
+      { kanji: '徹底', yomi: 'てってい', sentence: '調査を{target}する。' },
+      { kanji: '繊細', yomi: 'せんさい', sentence: '{target}な作業。' },
+      { kanji: '擁護', yomi: 'ようご', sentence: '人権を{target}する。' },
+      { kanji: '奨励', yomi: 'しょうれい', sentence: '挑戦を{target}する。' },
+      { kanji: '回避', yomi: 'かいひ', sentence: '責任を{target}する。' },
+      { kanji: '露呈', yomi: 'ろてい', sentence: '弱点を{target}する。' },
+      { kanji: '蓄積', yomi: 'ちくせき', sentence: 'データを{target}する。' },
+      { kanji: '脅威', yomi: 'きょうい', sentence: '安全への{target}。' },
+      { kanji: '克服', yomi: 'こくふく', sentence: '困難を{target}する。' },
+      { kanji: '権威', yomi: 'けんい', sentence: '学術的{target}がある。' },
+      { kanji: '増殖', yomi: 'ぞうしょく', sentence: '細菌が{target}する。' },
+      { kanji: '経緯', yomi: 'けいい', sentence: '事件の{target}を説明する。' },
+      { kanji: '拘束', yomi: 'こうそく', sentence: '身を{target}する。' },
+      { kanji: '謙虚', yomi: 'けんきょ', sentence: '{target}な態度。' },
+      { kanji: '動揺', yomi: 'どうよう', sentence: '市場が{target}する。' },
+      { kanji: '漠然', yomi: 'ばくぜん', sentence: '{target}とした不安。' },
+      { kanji: '基盤', yomi: 'きばん', sentence: '経済の{target}を固める。' },
+      { kanji: '洞察', yomi: 'どうさつ', sentence: '本質を{target}する。' },
+      { kanji: '余儀', yomi: 'よぎ', sentence: '{target}なく合意する。' },
+      { kanji: '錯覚', yomi: 'さっかく', sentence: '{target}に陥る。' },
+      { kanji: '渇望', yomi: 'かつぼう', sentence: '変化を{target}する。' },
+      { kanji: '遮断', yomi: 'しゃだん', sentence: '通信を{target}する。' },
+      { kanji: '貫徹', yomi: 'かんてつ', sentence: '信念を{target}する。' },
+      { kanji: '普及', yomi: 'ふきゅう', sentence: '教育を{target}する。' },
+      { kanji: '忌避', yomi: 'きひ', sentence: '人を{target}する。' },
+      { kanji: '駆逐', yomi: 'くちく', sentence: '害虫を{target}する。' },
+      { kanji: '干渉', yomi: 'かんしょう', sentence: '内政に{target}する。' },
+      { kanji: '含蓄', yomi: 'がんちく', sentence: '深い{target}がある。' },
+      { kanji: '指摘', yomi: 'してき', sentence: '誤りを{target}する。' },
+      { kanji: '包摂', yomi: 'ほうせつ', sentence: '多様性を{target}する。' },
+      { kanji: '踏襲', yomi: 'とうしゅう', sentence: '伝統を{target}する。' },
+      { kanji: '衝撃', yomi: 'しょうげき', sentence: '心に{target}を与える。' },
+      { kanji: '常軌', yomi: 'じょうき', sentence: '{target}を踏む。' },
+      { kanji: '措置', yomi: 'そち', sentence: '応急{target}を取る。' },
+      { kanji: '根拠', yomi: 'こんきょ', sentence: '明確な{target}がある。' },
+      { kanji: '連鎖', yomi: 'れんさ', sentence: '{target}反応が起きる。' },
+      { kanji: '証拠', yomi: 'しょうこ', sentence: '決定的な{target}。' },
+      { kanji: '矛盾', yomi: 'むじゅん', sentence: '{target}が生じる。' },
+      { kanji: '克明', yomi: 'こくめい', sentence: '{target}な記述。' },
+      { kanji: '緊張', yomi: 'きんちょう', sentence: '{target}が高まる。' },
+      { kanji: '規範', yomi: 'きはん', sentence: '社会の{target}。' },
+      { kanji: '秩序', yomi: 'ちつじょ', sentence: '社会{target}を保つ。' },
+      { kanji: '代替', yomi: 'だいたい', sentence: '石油の{target}燃料。' },
+      { kanji: '便宜', yomi: 'べんぎ', sentence: '{target}を図る。' },
+      { kanji: '巧妙', yomi: 'こうみょう', sentence: '{target}な手法。' },
+      { kanji: '途方', yomi: 'とほう', sentence: '{target}に暮れる。' },
+      { kanji: '搾取', yomi: 'さくしゅ', sentence: '労働を{target}する。' },
+      { kanji: '素朴', yomi: 'そぼく', sentence: '{target}な暮らし。' },
+      { kanji: '潜在', yomi: 'せんざい', sentence: '{target}的な能力。' },
+      { kanji: '概念', yomi: 'がいねん', sentence: '新しい{target}。' },
+      { kanji: '丁寧', yomi: 'ていねい', sentence: '{target}な対応。' },
+      { kanji: '模索', yomi: 'もさく', sentence: '答えを{target}する。' },
+      { kanji: '逸脱', yomi: 'いつだつ', sentence: '規範から{target}する。' },
+      { kanji: '寛容', yomi: 'かんよう', sentence: '{target}な姿勢。' },
+      { kanji: '妥協', yomi: 'だきょう', sentence: '互いに{target}する。' },
+      { kanji: '継承', yomi: 'けいしょう', sentence: '文化を{target}する。' },
+      { kanji: '圧倒', yomi: 'あっとう', sentence: '敵を{target}する。' },
+      { kanji: '傑作', yomi: 'けっさく', sentence: '映画の{target}。' },
+      { kanji: '束縛', yomi: 'そくばく', sentence: '自由を{target}する。' },
+      { kanji: '掲載', yomi: 'けいさい', sentence: '記事を{target}する。' },
+      { kanji: '恩恵', yomi: 'おんけい', sentence: '自然の{target}。' },
+      { kanji: '抑揚', yomi: 'よくよう', sentence: '{target}をつける。' },
+      { kanji: '阻止', yomi: 'そし', sentence: '侵入を{target}する。' },
+      { kanji: '錯誤', yomi: 'さくご', sentence: '{target}を訂正する。' },
+      { kanji: '模倣', yomi: 'もほう', sentence: '様式を{target}する。' },
+      { kanji: '崩れ', yomi: 'くずれ', sentence: '壁に{target}が見える。' },
+      { kanji: '邪魔', yomi: 'じゃま', sentence: '作業の{target}になる。' },
+      { kanji: '融合', yomi: 'ゆうごう', sentence: '文化が{target}する。' },
+    ];
+
+    const final1ReadingRaw = [
+      { kanji: '従順', yomi: ['じゅうじゅん'], sentence: '{target}な態度を保つ。' },
+      { kanji: '順応', yomi: ['じゅんおう'], sentence: '環境に{target}する。' },
+      { kanji: '創出', yomi: ['そうしゅつ'], sentence: '新価値を{target}する。' },
+      { kanji: '重宝', yomi: ['ちょうほう'], sentence: '{target}がいの品。' },
+      { kanji: '臨む', yomi: ['のぞむ'], sentence: '危機に{target}む。' },
+      { kanji: '類推', yomi: ['るいすい'], sentence: '事例から{target}する。' },
+      { kanji: '背反', yomi: ['はいはん'], sentence: '原則と{target}する。' },
+      { kanji: '呼応', yomi: ['こおう'], sentence: '要求に{target}する。' },
+      { kanji: '早晩', yomi: ['そうばん'], sentence: '{target}知れる結果。' },
+      { kanji: '机上', yomi: ['きじょう'], sentence: '{target}の空論。' },
+      { kanji: '閉口', yomi: ['へいこう'], sentence: '理不尽に{target}する。' },
+      { kanji: '簡便', yomi: ['かんべん'], sentence: '{target}な方法。' },
+      { kanji: '専横', yomi: ['せんおう'], sentence: '{target}な態度。' },
+      { kanji: '収まる', yomi: ['おさまる'], sentence: '騒ぎが{target}った。' },
+      { kanji: '頂', yomi: ['いただき'], sentence: '山の{target}に立つ。' },
+      { kanji: '備忘', yomi: ['びぼう'], sentence: '{target}録を残す。' },
+      { kanji: '養蚕', yomi: ['ようさん'], sentence: '{target}業が盛んだった。' },
+      { kanji: '窓外', yomi: ['そうがい'], sentence: '事務所の{target}に出る。' },
+      { kanji: '供する', yomi: ['ともする'], sentence: '神に{target}する。' },
+      { kanji: '障子', yomi: ['しょうじ'], sentence: '紙の{target}を張る。' },
+    ];
+
+    const buildProblemSet = (id, name, writingRaw, readingRaw) => ({
+      id,
+      name,
+      writing: writingRaw.map((item, idx) => ({ ...item, id: `${id}:w${idx}` })),
+      reading: readingRaw.map((item, idx) => ({ ...item, id: `${id}:r${idx}` })),
+    });
+
+    const PROBLEM_SETS = [
+      buildProblemSet('final1', '期末（1）', final1WritingRaw, final1ReadingRaw),
+      buildProblemSet('mid', '中間（全）', midTermWritingRaw, midTermReadingRaw),
+    ];
+    const PROBLEM_SET_MAP = Object.fromEntries(PROBLEM_SETS.map((s) => [s.id, s]));
+    const DEFAULT_PROBLEM_SET_ID = 'final1';
+
+    const migrateHistory = (raw) => {
+      if (!raw || typeof raw !== 'object') return {};
+      const next = { ...raw };
+      Object.keys(raw).forEach((k) => {
+        if (/^[wr]\d+$/.test(k)) {
+          next[`mid:${k}`] = raw[k];
+          delete next[k];
+        }
+      });
+      return next;
+    };
 
     // --- 手書き漢字認識（TensorFlow.js CNN・約2200字） ---
     const KANJI_MODEL_URL = 'https://ichisadashioko.github.io/kanji-recognition/kanji-model-v3-tfjs/model.json';
@@ -308,6 +457,28 @@
     const HANDWRITING_MIN_INK_PIXELS = 40;
 
     const splitKanjiChars = (text) => Array.from(text || '');
+
+    const READING_OKURIGANA_TRAILING = [
+      'という', 'とは', 'から', 'まで', 'より', 'では', 'でも', 'だけ', 'しか',
+      'を', 'が', 'の', 'に', 'で', 'は', 'も', 'と', 'て', 'ば', 'へ',
+    ];
+
+    /** 読み問題：文中の {target} 位置に実際に入る漢字＋直後の送り仮名（助詞は除く） */
+    const getReadingTargetDisplay = (question) => {
+      if (!question?.sentence?.includes('{target}')) return question?.kanji ?? '';
+      const parts = question.sentence.split('{target}');
+      if (parts.length !== 2) return question.kanji;
+      let okurigana = '';
+      const m = parts[1].match(/^[\u3040-\u309F\u30A0-\u30FFー]+/);
+      if (m) okurigana = m[0];
+      for (const p of READING_OKURIGANA_TRAILING) {
+        if (okurigana.endsWith(p) && okurigana.length > p.length) {
+          okurigana = okurigana.slice(0, -p.length);
+          break;
+        }
+      }
+      return question.kanji + okurigana;
+    };
 
     const KanjiRecognizer = (() => {
       let model = null;
@@ -478,14 +649,17 @@
     const IconCheckCircle = () => (
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
     );
+    const IconNotebook = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      </svg>
+    );
     const IconPenOn = () => (
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
     );
     const IconPenOff = () => (
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 2 20 20"/><path d="M10 10 2.5 17.5 6 21 14 14"/><path d="m14 4 6 6"/><path d="m15.5 8.5 5-5a2.828 2.828 0 1 0-4-4l-5 5"/></svg>
-    );
-    const IconSettings = () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     );
 
     const GradeMark = ({ type }) => {
@@ -505,21 +679,32 @@
       }
     };
 
+    const PEN_WIDTH = 4;
+
     function App() {
       const savedState = useRef(loadSavedState()).current;
 
       const [view, setView] = useState('quiz');
+      const [problemSetId, setProblemSetId] = useState(() => {
+        const id = savedState?.problemSetId ?? DEFAULT_PROBLEM_SET_ID;
+        return PROBLEM_SET_MAP[id] ? id : DEFAULT_PROBLEM_SET_ID;
+      });
+      const [showSetPicker, setShowSetPicker] = useState(false);
       const [mode, setMode] = useState(() => savedState?.mode ?? 'writing');
       const [currentQuestion, setCurrentQuestion] = useState(null);
       const [readingInput, setReadingInput] = useState('');
-      const [history, setHistory] = useState(() => savedState?.history ?? {});
+      const [history, setHistory] = useState(() => migrateHistory(savedState?.history));
+
+      const activeProblemSet = PROBLEM_SET_MAP[problemSetId] ?? PROBLEM_SETS[0];
+      const getActiveLists = () => ({
+        writing: activeProblemSet.writing,
+        reading: activeProblemSet.reading,
+      });
       const [excludeCorrect, setExcludeCorrect] = useState(() => savedState?.excludeCorrect ?? true);
       const [hideRecoveredFromIncorrect, setHideRecoveredFromIncorrect] = useState(
         () => savedState?.hideRecoveredFromIncorrect ?? true
       );
       const [showCanvas, setShowCanvas] = useState(() => savedState?.showCanvas ?? true);
-      const [penWidth, setPenWidth] = useState(() => savedState?.penWidth ?? 4);
-      const [showSettings, setShowSettings] = useState(false);
       const [showAnswer, setShowAnswer] = useState(false);
       const [result, setResult] = useState(null);
       const [writingStatus, setWritingStatus] = useState('idle');
@@ -530,7 +715,7 @@
       const isDrawingRef = useRef(false);
       const activeCanvasIndexRef = useRef(0);
       const showAnswerRef = useRef(false);
-      const penWidthRef = useRef(penWidth);
+      const resultMarkTimerRef = useRef(null);
       const gradedRef = useRef(false);
       const currentQuestionRef = useRef(null);
       const passRevealedRef = useRef(false);
@@ -552,12 +737,24 @@
       const [activeCharPage, setActiveCharPage] = useState(0);
 
       useEffect(() => {
-        penWidthRef.current = penWidth;
-      }, [penWidth]);
-
-      useEffect(() => {
         showAnswerRef.current = showAnswer;
       }, [showAnswer]);
+
+      const clearResultMarkTimer = () => {
+        if (resultMarkTimerRef.current) {
+          clearTimeout(resultMarkTimerRef.current);
+          resultMarkTimerRef.current = null;
+        }
+      };
+
+      const showIncorrectMarkBriefly = () => {
+        clearResultMarkTimer();
+        setResult('incorrect');
+        resultMarkTimerRef.current = setTimeout(() => {
+          setResult(null);
+          resultMarkTimerRef.current = null;
+        }, 1000);
+      };
 
       useEffect(() => {
         retryModeRef.current = retryMode;
@@ -607,11 +804,35 @@
             excludeCorrect,
             mode,
             showCanvas,
-            penWidth,
             hideRecoveredFromIncorrect,
+            problemSetId,
           }));
         } catch (_) {}
-      }, [history, excludeCorrect, mode, showCanvas, penWidth, hideRecoveredFromIncorrect]);
+      }, [history, excludeCorrect, mode, showCanvas, hideRecoveredFromIncorrect, problemSetId]);
+
+      const selectProblemSet = (id) => {
+        if (!PROBLEM_SET_MAP[id] || id === problemSetId) {
+          setShowSetPicker(false);
+          return;
+        }
+        clearResultMarkTimer();
+        setProblemSetId(id);
+        setShowSetPicker(false);
+        setView('quiz');
+        setCurrentQuestion(null);
+        setResult(null);
+        setShowAnswer(false);
+        setWritingStatus('idle');
+        setShowPassAnswer(false);
+        setPassPracticeMode(false);
+        setRetryMode(false);
+        setWrongSlotIndices([]);
+        passRevealedRef.current = false;
+        passMissRecordedRef.current = false;
+        gradedRef.current = false;
+        cancelScheduledEvaluation();
+        setReadingInput('');
+      };
 
       const getDisplayYomi = (question) => {
         if (!question || !question.yomi) return '';
@@ -633,6 +854,7 @@
       };
 
       const moveToNextQuestion = (currentHistory) => {
+        clearResultMarkTimer();
         setResult(null);
         setShowAnswer(false);
         setWritingStatus('idle');
@@ -651,7 +873,8 @@
           initAllCanvases();
         }
 
-        const list = mode === 'writing' ? writingData : readingData;
+        const { writing, reading } = getActiveLists();
+        const list = mode === 'writing' ? writing : reading;
         let availableList = list;
         
         if (excludeCorrect) {
@@ -669,7 +892,7 @@
 
       useEffect(() => {
         moveToNextQuestion(history);
-      }, [mode, excludeCorrect]);
+      }, [mode, excludeCorrect, problemSetId]);
 
       const initCanvasAt = (index) => {
         const canvas = canvasRefs.current[index];
@@ -682,7 +905,7 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.lineWidth = penWidthRef.current;
+        ctx.lineWidth = PEN_WIDTH;
         ctx.strokeStyle = '#2d3748';
       };
 
@@ -693,8 +916,7 @@
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `${size}px "Zen Kaku Gothic New", sans-serif`;
-        const guideY = canvas.height / 2 - canvas.height * 0.06;
-        ctx.fillText(char, canvas.width / 2, guideY);
+        ctx.fillText(char, canvas.width / 2, canvas.height / 2);
         ctx.restore();
       };
 
@@ -832,12 +1054,11 @@
             .map((ch, i) => (recognitions[i]?.char === ch ? -1 : i))
             .filter((i) => i >= 0);
 
-          setResult('incorrect');
+          showIncorrectMarkBriefly();
           setWritingStatus('wrong');
           setRetryMode(true);
           setWrongSlotIndices(wrongIndices);
           if (wrongIndices.length > 0) setActiveCharPage(wrongIndices[0]);
-          setResult(null);
           wrongIndices.forEach((i) => initCanvasAt(i));
 
           const canvasesAfterClear = expected.map((_, i) => canvasRefs.current[i]);
@@ -860,14 +1081,13 @@
       const startDrawing = (e, canvasIndex) => {
         if (gradedRef.current || (passRevealedRef.current && !passPracticeModeRef.current) || !modelReady) return;
         if (retryModeRef.current && wrongSlotIndices.length > 0 && !wrongSlotIndices.includes(canvasIndex)) return;
-        setResult(null);
         cancelScheduledEvaluation();
         evaluateGenerationRef.current++;
         e.preventDefault?.();
         activeCanvasIndexRef.current = canvasIndex;
         const { x, y } = getCoordinates(e, canvasIndex);
         const ctx = canvasRefs.current[canvasIndex].getContext('2d');
-        ctx.lineWidth = penWidthRef.current;
+        ctx.lineWidth = PEN_WIDTH;
         ctx.beginPath();
         ctx.moveTo(x, y);
         isDrawingRef.current = true;
@@ -917,16 +1137,22 @@
         return () => { document.body.style.overflow = prevOverflow; };
       }, [isDrawing]);
 
-      useEffect(() => () => cancelScheduledEvaluation(), []);
+      useEffect(() => () => {
+        cancelScheduledEvaluation();
+        clearResultMarkTimer();
+      }, []);
 
       const clearCanvasAt = async (index) => {
         if (gradedRef.current || (passRevealedRef.current && !passPracticeModeRef.current)) return;
-        setResult(null);
+        clearResultMarkTimer();
         cancelScheduledEvaluation();
         evaluateGenerationRef.current++;
         if (passPracticeModeRef.current) initCanvasWithGuide(index, charSlots[index]);
         else initCanvasAt(index);
-        if (!retryModeRef.current) setWritingStatus('idle');
+        if (!retryModeRef.current) {
+          setResult(null);
+          setWritingStatus('idle');
+        }
         await refreshJudgmentInfo();
       };
 
@@ -951,6 +1177,7 @@
         passRevealedRef.current = false;
         setShowPassAnswer(false);
         setPassPracticeMode(true);
+        clearResultMarkTimer();
         setResult(null);
         setWritingStatus('pass_retry');
         setRetryMode(true);
@@ -991,7 +1218,7 @@
         if (!slot) return 'pending';
         if (slot.recognized === slot.expected && slot.recognized) return 'correct';
         if (wrongSlotIndices.includes(index)) return 'wrong';
-        if (result === 'incorrect' && slot.recognized && slot.recognized !== slot.expected) return 'wrong';
+        if (writingStatus === 'wrong' && slot.recognized && slot.recognized !== slot.expected) return 'wrong';
         if (slot.recognized && slot.recognized !== slot.expected) return 'wrong';
         return 'pending';
       };
@@ -1003,7 +1230,8 @@
           : currentQuestion.yomi === normalizedInput;
         const gradeResult = isCorrect ? 'correct' : 'incorrect';
         
-        setResult(gradeResult);
+        if (gradeResult === 'incorrect') showIncorrectMarkBriefly();
+        else setResult('correct');
         setHistory(prev => {
           const currentData = prev[currentQuestion.id] || { missCount: 0 };
           const newMissCount = gradeResult === 'incorrect' ? currentData.missCount + 1 : currentData.missCount;
@@ -1022,7 +1250,9 @@
       const renderSentence = () => {
         if (!currentQuestion) return null;
         const parts = currentQuestion.sentence.split('{target}');
-        const targetText = mode === 'writing' ? getDisplayYomi(currentQuestion) : currentQuestion.kanji;
+        const targetText = mode === 'writing'
+          ? getDisplayYomi(currentQuestion)
+          : getReadingTargetDisplay(currentQuestion);
         
         return (
           <div className="text-xl md:text-2xl tracking-widest mb-8 text-center text-gray-800 leading-relaxed animate-fade-in">
@@ -1050,14 +1280,23 @@
             <button onClick={() => setExcludeCorrect(false)} className="w-full py-4 bg-gray-900 text-white font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-md">
               全問から出題する
             </button>
-            <button onClick={() => { setHistory({}); moveToNextQuestion({}); }} className="w-full py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold tracking-widest hover:bg-gray-50 transition-colors">
-              学習履歴をリセット
+            <button onClick={() => {
+              const prefix = `${problemSetId}:`;
+              setHistory((prev) => {
+                const next = { ...prev };
+                Object.keys(next).forEach((k) => { if (k.startsWith(prefix)) delete next[k]; });
+                return next;
+              });
+              moveToNextQuestion({});
+            }} className="w-full py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold tracking-widest hover:bg-gray-50 transition-colors">
+              この問題集の履歴をリセット
             </button>
           </div>
         </div>
       );
 
       const renderListView = () => {
+        const { writing: writingData, reading: readingData } = getActiveLists();
         const isIncorrectListItem = (record) => {
           if (!record) return false;
           const hasMiss = record.status === 'incorrect' || record.missCount > 0;
@@ -1215,7 +1454,7 @@
       };
 
       return (
-        <div className="min-h-[100dvh] bg-[#f8f9fa] text-gray-800 p-2 md:p-4 flex justify-center items-start selection:bg-gray-200">
+        <div className="min-h-screen bg-[#f8f9fa] text-gray-800 p-4 flex justify-center items-start selection:bg-gray-200">
           <style>{`
             * { font-family: 'Zen Kaku Gothic New', sans-serif; }
             @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -1230,52 +1469,52 @@
             .handwriting-pages-viewport { overflow: hidden; width: 100%; }
             .handwriting-pages-track { display: flex; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
             .handwriting-page { flex: 0 0 100%; width: 100%; min-width: 100%; box-sizing: border-box; padding: 0 2px; }
-            .handwriting-slot-box {
-              width: 100%;
-              max-width: min(86vw, 280px);
-              margin-left: auto;
-              margin-right: auto;
-              aspect-ratio: 1 / 1;
-              height: min(56vw, calc(100dvh - 22rem), 240px);
-              max-height: min(56vw, calc(100dvh - 22rem), 240px);
-            }
-            .app-shell { max-height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
-            .app-shell-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+            .handwriting-slot-box { width: 100%; max-width: min(100%, 320px); margin-left: auto; margin-right: auto; aspect-ratio: 1 / 1; min-height: min(72vw, 320px); }
           `}</style>
 
-          <div className="w-full max-w-lg bg-white border border-gray-300 mt-0 md:mt-4 mb-2 md:mb-6 relative overflow-hidden shadow-sm app-shell mx-auto">
-            <div className="p-3 md:p-4 border-b border-gray-300 flex justify-between items-center bg-white relative shrink-0">
+          <div className="w-full max-w-lg bg-white border border-gray-300 mt-2 md:mt-10 mb-10 relative overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-gray-300 flex justify-between items-center bg-white relative">
               <button
                 type="button"
-                onClick={() => setShowSettings((v) => !v)}
+                onClick={() => setShowSetPicker((v) => !v)}
                 className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors shrink-0"
-                aria-label="設定"
+                aria-label="問題集を選ぶ"
               >
-                <IconSettings />
+                <IconNotebook />
               </button>
-              <h1 className="flex-1 text-center text-lg md:text-xl tracking-widest font-bold text-gray-900 px-1">中間テスト 漢字練習</h1>
-              <button onClick={() => { setShowSettings(false); setView(view === 'list' ? 'quiz' : 'list'); }} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors shrink-0">
+              <div className="text-center flex-1 min-w-0 px-1">
+                <h1 className="text-xl tracking-widest font-bold text-gray-900">漢字練習</h1>
+                <p className="text-[10px] text-gray-500 tracking-wide mt-0.5 truncate">{activeProblemSet.name}</p>
+              </div>
+              <button onClick={() => { setShowSetPicker(false); setView(view === 'list' ? 'quiz' : 'list'); }} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                 {view === 'list' ? <IconX /> : <IconList />}
               </button>
-              {showSettings && (
-                <div className="absolute left-0 right-0 top-full z-40 bg-white border-b border-gray-300 shadow-md px-4 py-3">
-                  <label className="flex items-center gap-3">
-                    <span className="text-xs text-gray-600 font-bold tracking-wide shrink-0 w-14">ペンの太さ</span>
-                    <input
-                      type="range"
-                      min="2"
-                      max="24"
-                      step="1"
-                      value={penWidth}
-                      onChange={(e) => setPenWidth(Number(e.target.value))}
-                      className="flex-1 min-w-0 h-1 accent-gray-900 cursor-pointer"
-                    />
-                    <span className="text-xs text-gray-800 font-bold tabular-nums w-6 text-right">{penWidth}</span>
-                  </label>
-                </div>
+              {showSetPicker && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowSetPicker(false)} aria-hidden="true" />
+                  <div className="absolute left-2 top-full mt-1 z-50 w-52 bg-white border border-gray-300 shadow-lg rounded overflow-hidden">
+                    <p className="px-3 py-2 text-[10px] text-gray-500 tracking-wide border-b border-gray-200 bg-[#fafafa]">問題集</p>
+                    {PROBLEM_SETS.map((set) => (
+                      <button
+                        key={set.id}
+                        type="button"
+                        onClick={() => selectProblemSet(set.id)}
+                        className={`w-full text-left px-4 py-3 text-sm tracking-wide transition-colors ${
+                          problemSetId === set.id
+                            ? 'bg-gray-900 text-white font-bold'
+                            : 'text-gray-800 hover:bg-gray-50'
+                        }`}
+                      >
+                        {set.name}
+                        <span className={`block text-[10px] mt-0.5 font-normal ${problemSetId === set.id ? 'text-gray-300' : 'text-gray-400'}`}>
+                          書き{set.writing.length}・読み{set.reading.length}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
-            <div className="app-shell-body">
 
             {view === 'list' ? renderListView() : (
               <>
@@ -1289,7 +1528,7 @@
                 </div>
 
                 {!currentQuestion ? renderAllClear() : (
-                  <div className="p-4 md:p-8 flex flex-col items-center min-h-0 relative animate-fade-in">
+                  <div className="p-6 md:p-10 flex flex-col items-center min-h-[500px] relative animate-fade-in">
                     {(() => {
                       const miss = getEffectiveMissCount(currentQuestion.id);
                       if (miss <= 0) return null;
@@ -1322,7 +1561,15 @@
                     )}
                     
                     {mode === 'writing' ? (
-                      <div className="w-full mb-3">
+                      <div className="w-full mb-4">
+                        <div className="flex justify-end items-center gap-3 mb-2">
+                          <button onClick={() => setShowCanvas(!showCanvas)} className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1.5 p-1 shrink-0">
+                            {showCanvas ? <IconPenOff /> : <IconPenOn />}
+                            {showCanvas ? '手書きを隠す' : '手書きを開く'}
+                          </button>
+                        </div>
+                        
+                        {showCanvas && (
                           <div className="w-full relative animate-fade-in canvas-draw-area">
                             {!modelReady && !modelError && (
                               <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-2 text-center">
@@ -1398,8 +1645,7 @@
                                   return (
                                     <div key={`${currentQuestion.id}-${index}`} className="handwriting-page flex flex-col">
                                       <p className="text-xs text-gray-600 text-center mb-2 tracking-widest font-bold">
-                                        {charSlots.length > 1 ? `${index + 1}文字目：` : ''}
-                                        <span className="text-lg text-gray-900">{char}</span>
+                                        {charSlots.length > 1 ? `${index + 1}文字目` : '手書き'}
                                       </p>
                                       <div
                                         ref={(el) => { containerRefs.current[index] = el; }}
@@ -1427,12 +1673,18 @@
                                           onTouchCancel={(e) => handleCanvasTouchEnd(e, index)}
                                         />
                                       </div>
+                                      <p className={`text-xs text-center mt-2 tracking-widest tabular-nums ${isSlotMatch ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
+                                        認識: {slot?.recognized ?? '—'}
+                                        {slot?.confidence != null && (
+                                          <span className="text-[10px] text-gray-500 ml-1">({slot.confidence}%)</span>
+                                        )}
+                                      </p>
                                       {index === activeCharPage && result !== 'correct' && !showPassAnswer && (
                                         <button
                                           type="button"
                                           onClick={() => clearCanvasAt(index)}
                                           disabled={!modelReady}
-                                          className="mt-2 w-full max-w-[min(86vw,280px)] mx-auto py-2 text-[11px] text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                                          className="mt-2 w-full max-w-[320px] mx-auto py-2 text-[11px] text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                           書き直し
                                         </button>
@@ -1442,7 +1694,23 @@
                                 })}
                               </div>
                             </div>
+                            {passPracticeMode && (
+                              <p className="text-xs text-blue-800 bg-blue-50 border border-blue-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
+                                薄く表示された正解の漢字を参考に、もう一度書いてください。
+                              </p>
+                            )}
+                            {retryMode && writingStatus === 'wrong' && !showPassAnswer && !passPracticeMode && (
+                              <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
+                                間違えた文字（赤いタブ）をもう一度書いてください。ボタンで該当の文字へ移れます。
+                              </p>
+                            )}
+                            {showPassAnswer && (
+                              <p className="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
+                                不正解です。正解は「{currentQuestion.kanji}」です。
+                              </p>
+                            )}
                           </div>
+                        )}
                       </div>
                     ) : (
                       <div className="w-full mb-8">
@@ -1460,13 +1728,19 @@
                     )}
 
                     <div className="w-full mt-auto">
-                      {mode === 'writing' && showPassAnswer && result === 'incorrect' && (
-                        <button
-                          onClick={handlePassNext}
-                          className="w-full py-4 mb-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3"
-                        >
-                          次の問題へ <IconArrowRight />
-                        </button>
+                      {mode === 'writing' && showPassAnswer && (
+                        <div className="w-full animate-fade-in mb-4">
+                          <div className="text-center mb-4">
+                            <p className="text-sm text-gray-500 mb-1">正解</p>
+                            <p className="text-5xl font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
+                          </div>
+                          <button
+                            onClick={handlePassNext}
+                            className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3"
+                          >
+                            次の問題へ <IconArrowRight />
+                          </button>
+                        </div>
                       )}
 
                       {mode === 'writing' && result !== 'correct' && !showPassAnswer && (
@@ -1486,16 +1760,21 @@
                       )}
 
                       {mode === 'reading' && showAnswer && (
-                        <button onClick={handleNextClick} className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3">
-                          次の問題へ <IconArrowRight />
-                        </button>
+                        <div className="w-full animate-fade-in">
+                          <div className="text-center mb-6">
+                            <p className="text-sm text-gray-500 mb-1">正解</p>
+                            <p className="text-2xl font-bold tracking-widest text-gray-900">{getDisplayYomi(currentQuestion)}</p>
+                          </div>
+                          <button onClick={handleNextClick} className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3">
+                            次の問題へ <IconArrowRight />
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
                 )}
               </>
             )}
-            </div>
           </div>
         </div>
       );
