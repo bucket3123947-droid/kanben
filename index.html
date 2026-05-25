@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="app-build" content="retry-blue-all-chars">
+  <meta name="app-build" content="reading-sentence-fix">
   <title>漢字練習</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -408,7 +408,7 @@
       { kanji: '順応', yomi: ['じゅんおう'], sentence: '環境に{target}する。' },
       { kanji: '創出', yomi: ['そうしゅつ'], sentence: '新価値を{target}する。' },
       { kanji: '重宝', yomi: ['ちょうほう'], sentence: '{target}がいの品。' },
-      { kanji: '臨む', yomi: ['のぞむ'], sentence: '危機に{target}む。' },
+      { kanji: '臨', yomi: ['のぞむ'], sentence: '危機に{target}む。' },
       { kanji: '類推', yomi: ['るいすい'], sentence: '事例から{target}する。' },
       { kanji: '背反', yomi: ['はいはん'], sentence: '原則と{target}する。' },
       { kanji: '呼応', yomi: ['こおう'], sentence: '要求に{target}する。' },
@@ -417,12 +417,12 @@
       { kanji: '閉口', yomi: ['へいこう'], sentence: '理不尽に{target}する。' },
       { kanji: '簡便', yomi: ['かんべん'], sentence: '{target}な方法。' },
       { kanji: '専横', yomi: ['せんおう'], sentence: '{target}な態度。' },
-      { kanji: '収まる', yomi: ['おさまる'], sentence: '騒ぎが{target}った。' },
+      { kanji: '収ま', yomi: ['おさまる'], sentence: '騒ぎが{target}った。' },
       { kanji: '頂', yomi: ['いただき'], sentence: '山の{target}に立つ。' },
       { kanji: '備忘', yomi: ['びぼう'], sentence: '{target}録を残す。' },
       { kanji: '養蚕', yomi: ['ようさん'], sentence: '{target}業が盛んだった。' },
       { kanji: '窓外', yomi: ['そうがい'], sentence: '事務所の{target}に出る。' },
-      { kanji: '供する', yomi: ['ともする'], sentence: '神に{target}する。' },
+      { kanji: '供', yomi: ['ともする'], sentence: '神に{target}する。' },
       { kanji: '障子', yomi: ['しょうじ'], sentence: '紙の{target}を張る。' },
     ];
 
@@ -459,27 +459,8 @@
 
     const splitKanjiChars = (text) => Array.from(text || '');
 
-    const READING_OKURIGANA_TRAILING = [
-      'という', 'とは', 'から', 'まで', 'より', 'では', 'でも', 'だけ', 'しか',
-      'を', 'が', 'の', 'に', 'で', 'は', 'も', 'と', 'て', 'ば', 'へ',
-    ];
-
-    /** 読み問題：文中の {target} 位置に実際に入る漢字＋直後の送り仮名（助詞は除く） */
-    const getReadingTargetDisplay = (question) => {
-      if (!question?.sentence?.includes('{target}')) return question?.kanji ?? '';
-      const parts = question.sentence.split('{target}');
-      if (parts.length !== 2) return question.kanji;
-      let okurigana = '';
-      const m = parts[1].match(/^[\u3040-\u309F\u30A0-\u30FFー]+/);
-      if (m) okurigana = m[0];
-      for (const p of READING_OKURIGANA_TRAILING) {
-        if (okurigana.endsWith(p) && okurigana.length > p.length) {
-          okurigana = okurigana.slice(0, -p.length);
-          break;
-        }
-      }
-      return question.kanji + okurigana;
-    };
+    /** 読み問題：下線部は {target} に入る漢字のみ（直後の送り仮名は文中に残す） */
+    const getReadingTargetDisplay = (question) => question?.kanji ?? '';
 
     const KanjiRecognizer = (() => {
       let model = null;
