@@ -14,6 +14,8 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://ichisadashioko.github.io/kanji-recognition/label.js"></script>
 </head>
 <body class="bg-[#f8f9fa]" style="font-family: 'Zen Kaku Gothic New', sans-serif;">
 
@@ -70,7 +72,7 @@
       { kanji: '所産', yomi: 'しょさん', sentence: '長年の努力の{target}だ。' },
       { kanji: '察知', yomi: 'さっち', sentence: '危険を{target}して逃げる。' },
       { kanji: '未練', yomi: 'みれん', sentence: '過去に{target}を残さない。' },
-      { kanji: '帯びる', yomi: 'おびる', sentence: '熱を{target}議論。' },
+      { kanji: '帯', yomi: 'おびる', sentence: '熱を{target}びる議論。' },
       { kanji: '標的', yomi: 'ひょうてき', sentence: '{target}に向かって矢を放つ。' },
       { kanji: '刷新', yomi: 'さっしん', sentence: '組織の体制を{target}する。' },
       { kanji: '指標', yomi: 'しひょう', sentence: '景気動向の{target}となる。' },
@@ -90,11 +92,11 @@
       { kanji: '号泣', yomi: 'ごうきゅう', sentence: '悲しみのあまり{target}した。' },
       { kanji: '器官', yomi: 'きかん', sentence: '消化{target}の働き。' },
       { kanji: '待機', yomi: 'たいき', sentence: 'その場で{target}を命じられる。' },
-      { kanji: '課す', yomi: 'かす', sentence: '生徒に宿題を{target}。' },
+      { kanji: '課', yomi: 'かす', sentence: '生徒に宿題を{target}す。' },
       { kanji: '観念', yomi: 'かんねん', sentence: 'もはやこれまでと{target}する。' },
       { kanji: '強要', yomi: 'きょうよう', sentence: '無理な要求を{target}される。' },
       { kanji: '根底', yomi: 'こんてい', sentence: '思想の{target}にあるもの。' },
-      { kanji: '辞す', yomi: 'じす', sentence: '社長の職を{target}。' },
+      { kanji: '辞', yomi: 'じす', sentence: '社長の職を{target}す。' },
       { kanji: '不断', yomi: 'ふだん', sentence: '{target}の努力を続ける。' },
       { kanji: '提唱', yomi: 'ていしょう', sentence: '新しい理論を{target}する。' },
       { kanji: '構築', yomi: 'こうちく', sentence: '信頼関係を{target}する。' },
@@ -148,7 +150,7 @@
       { kanji: '不可分', yomi: 'ふかぶん', sentence: '両者は{target}の関係にある。' },
       { kanji: '不条理', yomi: 'ふじょうり', sentence: '世の中の{target}を嘆く。' },
       { kanji: '基調', yomi: 'きちょう', sentence: '白を{target}としたデザイン。' },
-      { kanji: '費やす', yomi: 'ついやす', sentence: '多くの時間を{target}。' },
+      { kanji: '費', yomi: 'ついやす', sentence: '多くの時間を{target}やす。' },
       { kanji: '精度', yomi: 'せいど', sentence: '機械の{target}を高める。' },
       { kanji: '確立', yomi: 'かくりつ', sentence: '自我が{target}する。' },
       { kanji: '境地', yomi: 'きょうち', sentence: '無我の{target}に至る。' },
@@ -213,7 +215,7 @@
       { kanji: '容姿', yomi: 'ようし', sentence: '端麗な{target}の持ち主。' },
       { kanji: '朗読', yomi: 'ろうどく', sentence: '詩を{target}する。' },
       { kanji: '展開', yomi: 'てんかい', sentence: '予想外の{target}になる。' },
-      { kanji: '刻む', yomi: 'きざむ', sentence: '歴史に名を{target}。' },
+      { kanji: '刻', yomi: 'きざむ', sentence: '歴史に名を{target}む。' },
       { kanji: '差異', yomi: 'さい', sentence: '両者には大きな{target}がある。' },
       { kanji: '簡潔', yomi: 'かんけつ', sentence: '{target}に説明する。' },
       { kanji: '救済', yomi: 'きゅうさい', sentence: '被害者を{target}する。' },
@@ -238,9 +240,9 @@
     const readingDataRaw = [
       { kanji: '所作', yomi: ['しょさ'], sentence: '美しい{target}を身につける。' },
       { kanji: '工面', yomi: ['くめん'], sentence: '旅行の費用を{target}する。' },
-      { kanji: '委ねる', yomi: ['ゆだねる'], sentence: '最終的な判断を専門家に{target}。' },
+      { kanji: '委', yomi: ['ゆだねる'], sentence: '最終的な判断を専門家に{target}ねる。' },
       { kanji: '都度', yomi: ['つど'], sentence: '問題が起きる{target}対応する。' },
-      { kanji: '育む', yomi: ['はぐくむ'], sentence: '子どもたちの豊かな心を{target}。' },
+      { kanji: '育', yomi: ['はぐくむ'], sentence: '子どもたちの豊かな心を{target}む。' },
       { kanji: '由来', yomi: ['ゆらい'], sentence: '地名の{target}を調べる。' },
       { kanji: '気配', yomi: ['けはい'], sentence: '朝夕に秋の{target}を感じる。' },
       { kanji: '画一', yomi: ['かくいつ'], sentence: '{target}的な詰め込み教育。' },
@@ -251,46 +253,46 @@
       { kanji: '形相', yomi: ['ぎょうそう'], sentence: '恐ろしい{target}で睨みつける。' },
       { kanji: '食指', yomi: ['しょくし'], sentence: 'その条件では{target}が動かない。' },
       { kanji: '直筆', yomi: ['じきひつ'], sentence: '作家の{target}の原稿が発見された。' },
-      { kanji: '半ば', yomi: ['なかば'], sentence: 'プロジェクトは{target}で頓挫した。' },
+      { kanji: '半', yomi: ['なかば'], sentence: 'プロジェクトは{target}ばで頓挫した。' },
       { kanji: '間近', yomi: ['まぢか'], sentence: '試験が{target}に迫っている。' },
-      { kanji: '反らす', yomi: ['そらす'], sentence: '気まずくなって目を{target}。' },
+      { kanji: '反', yomi: ['そらす'], sentence: '気まずくなって目を{target}らす。' },
       { kanji: '世間', yomi: ['せけん'], sentence: '{target}の注目を集める事件。' },
-      { kanji: '直ちに', yomi: ['ただちに'], sentence: '異常があれば{target}報告しなさい。' },
-      { kanji: '唱える', yomi: ['となえる'], sentence: '新しい学説を{target}。' },
+      { kanji: '直', yomi: ['ただちに'], sentence: '異常があれば{target}ちに報告しなさい。' },
+      { kanji: '唱', yomi: ['となえる'], sentence: '新しい学説を{target}える。' },
       { kanji: '必定', yomi: ['ひつじょう'], sentence: '失敗するのは{target}だ。' },
       { kanji: '山積', yomi: ['さんせき', 'やまづみ'], sentence: '解決すべき課題が{target}している。' },
-      { kanji: '浴びる', yomi: ['あびる'], sentence: '世間の非難を{target}。' },
+      { kanji: '浴', yomi: ['あびる'], sentence: '世間の非難を{target}びる。' },
       { kanji: '内省', yomi: ['ないせい'], sentence: '自らの行動を深く{target}する。' },
       { kanji: '天然', yomi: ['てんねん'], sentence: '{target}の素材を生かす。' },
       { kanji: '試練', yomi: ['しれん'], sentence: '厳しい{target}を乗り越える。' },
       { kanji: '方便', yomi: ['ほうべん'], sentence: '嘘も{target}だ。' },
       { kanji: '参画', yomi: ['さんかく'], sentence: 'プロジェクトに{target}する。' },
       { kanji: '昨今', yomi: ['さっこん'], sentence: '{target}の社会情勢を語る。' },
-      { kanji: '省く', yomi: ['はぶく'], sentence: '無駄な手間を{target}。' },
-      { kanji: '健やか', yomi: ['すこやか'], sentence: '子どもが{target}に育つ。' },
-      { kanji: '司る', yomi: ['つかさどる'], sentence: '政治を{target}機関。' },
+      { kanji: '省', yomi: ['はぶく'], sentence: '無駄な手間を{target}く。' },
+      { kanji: '健', yomi: ['すこやか'], sentence: '子どもが{target}やかに育つ。' },
+      { kanji: '司', yomi: ['つかさどる'], sentence: '政治を{target}る機関。' },
       { kanji: '末期', yomi: ['まつご'], sentence: '{target}の水を口に含む。' },
       { kanji: '束', yomi: ['たば'], sentence: '紙の{target}を抱える。' },
       { kanji: '口伝', yomi: ['くでん'], sentence: '奥義を{target}で教える。' },
-      { kanji: '連なり', yomi: ['つらなり'], sentence: '山々の{target}が見える。' },
-      { kanji: '刷る', yomi: ['する'], sentence: '年賀状を{target}。' },
+      { kanji: '連', yomi: ['つらなり'], sentence: '山々の{target}なりが見える。' },
+      { kanji: '刷', yomi: ['する'], sentence: '年賀状を{target}る。' },
       { kanji: '建前', yomi: ['たてまえ'], sentence: '本音と{target}を使い分ける。' },
       { kanji: '養生', yomi: ['ようじょう'], sentence: '病気のために{target}する。' },
       { kanji: '無造作', yomi: ['むぞうさ'], sentence: '髪を{target}に束ねる。' },
       { kanji: '感興', yomi: ['かんきょう'], sentence: '{target}が湧いてくる。' },
       { kanji: '因習', yomi: ['いんしゅう'], sentence: '古い{target}を打破する。' },
-      { kanji: '営み', yomi: ['いとなみ'], sentence: '人間の日々の{target}。' },
-      { kanji: '設ける', yomi: ['もうける'], sentence: '相談窓口を{target}。' },
+      { kanji: '営', yomi: ['いとなみ'], sentence: '人間の日々の{target}み。' },
+      { kanji: '設', yomi: ['もうける'], sentence: '相談窓口を{target}ける。' },
       { kanji: '代謝', yomi: ['たいしゃ'], sentence: '新陳{target}を促す。' },
       { kanji: '不易', yomi: ['ふえき'], sentence: '{target}流行の精神。' },
-      { kanji: '確固たる', yomi: ['かっこたる'], sentence: '{target}信念を持つ。' },
+      { kanji: '確固', yomi: ['かっこたる'], sentence: '{target}たる信念を持つ。' },
       { kanji: '息災', yomi: ['そくさい'], sentence: '無病{target}を祈る。' },
       { kanji: '保身', yomi: ['ほしん'], sentence: '{target}を図る言い訳。' },
       { kanji: '便益', yomi: ['べんえき'], sentence: '社会的な{target}をもたらす。' },
       { kanji: '名状', yomi: ['めいじょう'], sentence: '{target}しがたい美しさ。' },
       { kanji: '挙句', yomi: ['あげく'], sentence: 'さんざん迷った{target}に決めた。' },
       { kanji: '過言', yomi: ['かごん'], sentence: '天才と言っても{target}ではない。' },
-      { kanji: '快く', yomi: ['こころよく'], sentence: '依頼を{target}引き受ける。' },
+      { kanji: '快', yomi: ['こころよく'], sentence: '依頼を{target}く引き受ける。' },
       { kanji: '重複', yomi: ['ちょうふく', 'じゅうふく'], sentence: '内容が{target}している。' },
       { kanji: '招集', yomi: ['しょうしゅう'], sentence: '国会を{target}する。' },
       { kanji: '世故', yomi: ['せこ'], sentence: '{target}に長けた人物。' },
@@ -300,10 +302,158 @@
     const writingData = writingDataRaw.map((item, idx) => ({ ...item, id: `w${idx}` }));
     const readingData = readingDataRaw.map((item, idx) => ({ ...item, id: `r${idx}` }));
 
+    // --- 手書き漢字認識（TensorFlow.js CNN・約2200字） ---
+    const KANJI_MODEL_URL = 'https://ichisadashioko.github.io/kanji-recognition/kanji-model-v3-tfjs/model.json';
+    const HANDWRITING_INK_BRIGHTNESS = 210;
+    const HANDWRITING_MIN_INK_PIXELS = 40;
+
+    const splitKanjiChars = (text) => Array.from(text || '');
+
+    const KanjiRecognizer = (() => {
+      let model = null;
+      let loadPromise = null;
+      let labels = null;
+
+      const getLabels = () => {
+        if (labels) return labels;
+        if (typeof label_dict !== 'undefined') {
+          labels = label_dict;
+          return labels;
+        }
+        return null;
+      };
+
+      const canvasHasInk = (canvas) => {
+        if (!canvas || canvas.width === 0) return false;
+        const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+        let count = 0;
+        for (let i = 0; i < data.length; i += 16) {
+          if ((data[i] + data[i + 1] + data[i + 2]) / 3 < HANDWRITING_INK_BRIGHTNESS) {
+            count++;
+            if (count * 16 >= HANDWRITING_MIN_INK_PIXELS) return true;
+          }
+        }
+        return false;
+      };
+
+      const prepareModelCanvas = (sourceCanvas) => {
+        const prep = document.createElement('canvas');
+        prep.width = 64;
+        prep.height = 64;
+        const ctx = prep.getContext('2d');
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, 64, 64);
+
+        const w = sourceCanvas.width;
+        const h = sourceCanvas.height;
+        const imageData = sourceCanvas.getContext('2d').getImageData(0, 0, w, h);
+        let minX = w;
+        let minY = h;
+        let maxX = 0;
+        let maxY = 0;
+        for (let y = 0; y < h; y++) {
+          for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+            const b = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3;
+            if (b < HANDWRITING_INK_BRIGHTNESS) {
+              minX = Math.min(minX, x);
+              minY = Math.min(minY, y);
+              maxX = Math.max(maxX, x);
+              maxY = Math.max(maxY, y);
+            }
+          }
+        }
+        if (minX > maxX) return prep;
+
+        const pad = 6;
+        const bw = maxX - minX + 1;
+        const bh = maxY - minY + 1;
+        const scale = Math.min((64 - pad * 2) / bw, (64 - pad * 2) / bh);
+        const dw = bw * scale;
+        const dh = bh * scale;
+        const ox = (64 - dw) / 2;
+        const oy = (64 - dh) / 2;
+
+        const temp = document.createElement('canvas');
+        temp.width = w;
+        temp.height = h;
+        const tctx = temp.getContext('2d');
+        const inverted = tctx.createImageData(w, h);
+        for (let y = 0; y < h; y++) {
+          for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+            const b = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3;
+            const v = b < HANDWRITING_INK_BRIGHTNESS ? 255 : 0;
+            inverted.data[i] = v;
+            inverted.data[i + 1] = v;
+            inverted.data[i + 2] = v;
+            inverted.data[i + 3] = 255;
+          }
+        }
+        tctx.putImageData(inverted, 0, 0);
+        ctx.drawImage(temp, minX, minY, bw, bh, ox, oy, dw, dh);
+        return prep;
+      };
+
+      const load = async () => {
+        if (model) return model;
+        if (loadPromise) return loadPromise;
+        loadPromise = (async () => {
+          if (typeof tf === 'undefined') throw new Error('TensorFlow.js が読み込めません');
+          getLabels();
+          model = await tf.loadLayersModel(KANJI_MODEL_URL);
+          return model;
+        })();
+        return loadPromise;
+      };
+
+      const recognize = async (canvas, expectedChar = null) => {
+        await load();
+        const labelMap = getLabels();
+        if (!model || !labelMap || !canvasHasInk(canvas)) return null;
+
+        const prep = prepareModelCanvas(canvas);
+        let input = tf.browser.fromPixels(prep, 1);
+        input = input.cast('float32').div(255).reshape([1, 64, 64, 1]);
+        const output = model.predict(input);
+        const probs = await output.data();
+        output.dispose();
+        input.dispose();
+
+        const ranked = [];
+        for (let i = 0; i < probs.length; i++) {
+          ranked.push({ char: labelMap[i], confidence: probs[i] * 100, index: i });
+        }
+        ranked.sort((a, b) => b.confidence - a.confidence);
+
+        const top5 = ranked.slice(0, 5);
+        let chosen = ranked[0];
+        if (expectedChar) {
+          const matchInTop5 = top5.find((c) => c.char === expectedChar);
+          if (matchInTop5) chosen = matchInTop5;
+        }
+
+        return {
+          char: chosen.char,
+          confidence: chosen.confidence,
+          top3: ranked.slice(0, 3),
+        };
+      };
+
+      const recognizeSlots = async (canvases, expectedChars) => {
+        const recognitions = [];
+        for (let i = 0; i < expectedChars.length; i++) {
+          recognitions.push(canvases[i] ? await recognize(canvases[i], expectedChars[i]) : null);
+        }
+        const allHaveInk = recognitions.every((r) => r !== null);
+        const allMatch = expectedChars.every((ch, i) => recognitions[i]?.char === ch);
+        return { recognitions, allHaveInk, allMatch };
+      };
+
+      return { load, recognize, recognizeSlots, canvasHasInk };
+    })();
+
     // --- SVGアイコン定義 ---
-    const IconRefresh = () => (
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-    );
     const IconArrowRight = () => (
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
     );
@@ -368,16 +518,32 @@
       const [penWidth, setPenWidth] = useState(() => savedState?.penWidth ?? 8);
       const [showAnswer, setShowAnswer] = useState(false);
       const [result, setResult] = useState(null);
-      const [writingRetry, setWritingRetry] = useState(false);
+      const [writingStatus, setWritingStatus] = useState('idle');
       const [filterTab, setFilterTab] = useState('unanswered');
 
-      const canvasRef = useRef(null);
-      const containerRef = useRef(null);
+      const canvasRefs = useRef([]);
+      const containerRefs = useRef([]);
       const isDrawingRef = useRef(false);
+      const activeCanvasIndexRef = useRef(0);
       const showAnswerRef = useRef(false);
-      const writingRetryRef = useRef(false);
       const penWidthRef = useRef(penWidth);
+      const gradedRef = useRef(false);
+      const currentQuestionRef = useRef(null);
+      const passRevealedRef = useRef(false);
+      const passMissRecordedRef = useRef(false);
+      const evaluateTimerRef = useRef(null);
+      const evaluateGenerationRef = useRef(0);
+      const retryModeRef = useRef(false);
+      const wrongSlotIndicesRef = useRef([]);
+      const EVALUATE_DELAY_MS = 500;
       const [isDrawing, setIsDrawing] = useState(false);
+      const [judgmentInfo, setJudgmentInfo] = useState(null);
+      const [showPassAnswer, setShowPassAnswer] = useState(false);
+      const [retryMode, setRetryMode] = useState(false);
+      const [wrongSlotIndices, setWrongSlotIndices] = useState([]);
+      const [modelReady, setModelReady] = useState(false);
+      const [modelError, setModelError] = useState(null);
+      const [charSlots, setCharSlots] = useState([]);
 
       useEffect(() => {
         penWidthRef.current = penWidth;
@@ -388,8 +554,38 @@
       }, [showAnswer]);
 
       useEffect(() => {
-        writingRetryRef.current = writingRetry;
-      }, [writingRetry]);
+        retryModeRef.current = retryMode;
+      }, [retryMode]);
+
+      useEffect(() => {
+        wrongSlotIndicesRef.current = wrongSlotIndices;
+      }, [wrongSlotIndices]);
+
+      useEffect(() => {
+        KanjiRecognizer.load()
+          .then(() => setModelReady(true))
+          .catch((err) => setModelError(err.message || 'モデルの読み込みに失敗しました'));
+      }, []);
+
+      useEffect(() => {
+        currentQuestionRef.current = currentQuestion;
+        if (currentQuestion && mode === 'writing') {
+          const chars = splitKanjiChars(currentQuestion.kanji);
+          setCharSlots(chars);
+          const yomi = Array.isArray(currentQuestion.yomi) ? currentQuestion.yomi[0] : currentQuestion.yomi;
+          setJudgmentInfo({
+            targetKanji: currentQuestion.kanji,
+            yomi,
+            slots: chars.map((ch, i) => ({ index: i, expected: ch, recognized: null, confidence: null })),
+            recognizedText: '—'.repeat(chars.length),
+          });
+        }
+        setShowPassAnswer(false);
+        setRetryMode(false);
+        setWrongSlotIndices([]);
+        passRevealedRef.current = false;
+        passMissRecordedRef.current = false;
+      }, [currentQuestion, mode]);
 
       useEffect(() => {
         try {
@@ -426,11 +622,18 @@
       const moveToNextQuestion = (currentHistory) => {
         setResult(null);
         setShowAnswer(false);
-        setWritingRetry(false);
+        setWritingStatus('idle');
+        setShowPassAnswer(false);
+        setRetryMode(false);
+        setWrongSlotIndices([]);
+        passRevealedRef.current = false;
+        passMissRecordedRef.current = false;
+        gradedRef.current = false;
+        cancelScheduledEvaluation();
         setReadingInput('');
         
-        if (canvasRef.current && mode === 'writing' && showCanvas && view === 'quiz') {
-          initCanvas();
+        if (mode === 'writing' && showCanvas && view === 'quiz') {
+          initAllCanvases();
         }
 
         const list = mode === 'writing' ? writingData : readingData;
@@ -453,14 +656,12 @@
         moveToNextQuestion(history);
       }, [mode, excludeCorrect]);
 
-      const initCanvas = () => {
-        const canvas = canvasRef.current;
-        const container = containerRef.current;
+      const initCanvasAt = (index) => {
+        const canvas = canvasRefs.current[index];
+        const container = containerRefs.current[index];
         if (!canvas || !container) return;
-
         canvas.width = container.clientWidth;
-        canvas.height = canvas.width * 0.7;
-
+        canvas.height = canvas.width;
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -470,34 +671,161 @@
         ctx.strokeStyle = '#2d3748';
       };
 
+      const initAllCanvases = () => {
+        charSlots.forEach((_, i) => initCanvasAt(i));
+      };
+
+      const formatJudgmentInfo = (recognitions, question) => {
+        const expected = splitKanjiChars(question.kanji);
+        const yomi = Array.isArray(question.yomi) ? question.yomi[0] : question.yomi;
+        const slots = expected.map((ch, i) => {
+          const rec = recognitions[i];
+          return {
+            index: i,
+            expected: ch,
+            recognized: rec?.char ?? null,
+            confidence: rec ? Math.round(rec.confidence * 10) / 10 : null,
+          };
+        });
+        const recognizedText = slots.map((s) => s.recognized ?? '？').join('');
+        return { targetKanji: question.kanji, yomi, slots, recognizedText };
+      };
+
+      const refreshJudgmentInfo = async () => {
+        const question = currentQuestionRef.current;
+        if (!question || !modelReady) return;
+        const expected = splitKanjiChars(question.kanji);
+        const canvases = expected.map((_, i) => canvasRefs.current[i]);
+        const { recognitions } = await KanjiRecognizer.recognizeSlots(canvases, expected);
+        setJudgmentInfo(formatJudgmentInfo(recognitions, question));
+      };
+
       useEffect(() => {
         const handleResize = () => {
-          if (view === 'quiz' && mode === 'writing' && showCanvas) initCanvas();
+          if (view === 'quiz' && mode === 'writing' && showCanvas) initAllCanvases();
         };
         window.addEventListener('resize', handleResize);
-        if (view === 'quiz' && mode === 'writing' && showCanvas && (!showAnswer || writingRetry)) {
-          initCanvas();
+        if (view === 'quiz' && mode === 'writing' && showCanvas && charSlots.length > 0) {
+          requestAnimationFrame(() => initAllCanvases());
         }
         return () => window.removeEventListener('resize', handleResize);
-      }, [view, mode, showCanvas, currentQuestion, showAnswer, writingRetry]);
+      }, [view, mode, showCanvas, currentQuestion?.id, charSlots.length, modelReady]);
 
-      const getCoordinates = (e) => {
-        const canvas = canvasRef.current;
+      const getCoordinates = (e, canvasIndex) => {
+        const canvas = canvasRefs.current[canvasIndex];
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
         const point = e.touches?.length ? e.touches[0] : e.changedTouches?.length ? e.changedTouches[0] : e;
-
         return {
           x: (point.clientX - rect.left) * scaleX,
           y: (point.clientY - rect.top) * scaleY,
         };
       };
 
-      const startDrawing = (e) => {
-        if (showAnswerRef.current && !writingRetryRef.current) return;
-        const { x, y } = getCoordinates(e);
-        const ctx = canvasRef.current.getContext('2d');
+      const cancelScheduledEvaluation = () => {
+        if (evaluateTimerRef.current) {
+          clearTimeout(evaluateTimerRef.current);
+          evaluateTimerRef.current = null;
+        }
+      };
+
+      const schedulePostDrawEvaluation = () => {
+        cancelScheduledEvaluation();
+        const generation = ++evaluateGenerationRef.current;
+        evaluateTimerRef.current = setTimeout(async () => {
+          evaluateTimerRef.current = null;
+          if (generation !== evaluateGenerationRef.current) return;
+          if (gradedRef.current || passRevealedRef.current || !modelReady) return;
+          await refreshJudgmentInfo();
+          if (generation !== evaluateGenerationRef.current) return;
+          evaluateHandwriting({ allowCorrect: true });
+        }, EVALUATE_DELAY_MS);
+      };
+
+      const evaluateHandwriting = async ({ allowCorrect = false, allowIncorrect = false } = {}) => {
+        if (gradedRef.current || passRevealedRef.current || mode !== 'writing' || !modelReady) return;
+        const question = currentQuestionRef.current;
+        if (!question) return;
+
+        const expected = splitKanjiChars(question.kanji);
+        const canvases = expected.map((_, i) => canvasRefs.current[i]);
+        const { recognitions, allHaveInk, allMatch } = await KanjiRecognizer.recognizeSlots(canvases, expected);
+        setJudgmentInfo(formatJudgmentInfo(recognitions, question));
+
+        if (!allHaveInk && !allowIncorrect) {
+          setWritingStatus('idle');
+          return;
+        }
+
+        if (allMatch && allowCorrect && !gradedRef.current) {
+          if (retryModeRef.current) {
+            const wrongIndices = wrongSlotIndicesRef.current;
+            const wrongSlotsReady = wrongIndices.length > 0 && wrongIndices.every(
+              (i) => recognitions[i] !== null && recognitions[i].char === expected[i]
+            );
+            if (!wrongSlotsReady) return;
+          }
+          gradedRef.current = true;
+          setRetryMode(false);
+          setWrongSlotIndices([]);
+          setWritingStatus('correct');
+          setResult('correct');
+          setHistory((prev) => {
+            const currentData = prev[question.id] || { missCount: 0 };
+            const nextHistory = {
+              ...prev,
+              [question.id]: { status: 'correct', missCount: currentData.missCount },
+            };
+            setTimeout(() => moveToNextQuestion(nextHistory), 1000);
+            return nextHistory;
+          });
+          return;
+        }
+
+        if (allowIncorrect && (!allMatch || !allHaveInk)) {
+          if (retryModeRef.current) {
+            passRevealedRef.current = true;
+            setShowPassAnswer(true);
+            return;
+          }
+
+          const wrongIndices = expected
+            .map((ch, i) => (recognitions[i]?.char === ch ? -1 : i))
+            .filter((i) => i >= 0);
+
+          setResult('incorrect');
+          setWritingStatus('wrong');
+          setRetryMode(true);
+          setWrongSlotIndices(wrongIndices);
+          wrongIndices.forEach((i) => initCanvasAt(i));
+
+          const canvasesAfterClear = expected.map((_, i) => canvasRefs.current[i]);
+          const { recognitions: recAfter } = await KanjiRecognizer.recognizeSlots(canvasesAfterClear, expected);
+          setJudgmentInfo(formatJudgmentInfo(recAfter, question));
+
+          if (!passMissRecordedRef.current) {
+            passMissRecordedRef.current = true;
+            setHistory((prev) => {
+              const currentData = prev[question.id] || { missCount: 0 };
+              return {
+                ...prev,
+                [question.id]: { status: 'incorrect', missCount: currentData.missCount + 1 },
+              };
+            });
+          }
+        }
+      };
+
+      const startDrawing = (e, canvasIndex) => {
+        if (gradedRef.current || passRevealedRef.current || !modelReady) return;
+        if (retryModeRef.current && wrongSlotIndices.length > 0 && !wrongSlotIndices.includes(canvasIndex)) return;
+        cancelScheduledEvaluation();
+        evaluateGenerationRef.current++;
+        e.preventDefault?.();
+        activeCanvasIndexRef.current = canvasIndex;
+        const { x, y } = getCoordinates(e, canvasIndex);
+        const ctx = canvasRefs.current[canvasIndex].getContext('2d');
         ctx.lineWidth = penWidthRef.current;
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -505,54 +833,41 @@
         setIsDrawing(true);
       };
 
-      const draw = (e) => {
-        if (!isDrawingRef.current || (showAnswerRef.current && !writingRetryRef.current)) return;
-        const { x, y } = getCoordinates(e);
-        const ctx = canvasRef.current.getContext('2d');
+      const draw = (e, canvasIndex) => {
+        if (!isDrawingRef.current || activeCanvasIndexRef.current !== canvasIndex) return;
+        if (gradedRef.current || passRevealedRef.current) return;
+        e.preventDefault?.();
+        const { x, y } = getCoordinates(e, canvasIndex);
+        const ctx = canvasRefs.current[canvasIndex].getContext('2d');
         ctx.lineTo(x, y);
         ctx.stroke();
       };
 
-      const stopDrawing = () => {
-        if (isDrawingRef.current) {
-          const ctx = canvasRef.current.getContext('2d');
-          ctx.closePath();
-          isDrawingRef.current = false;
-          setIsDrawing(false);
-        }
+      const stopDrawing = (canvasIndex) => {
+        if (!isDrawingRef.current || activeCanvasIndexRef.current !== canvasIndex) return;
+        const ctx = canvasRefs.current[canvasIndex].getContext('2d');
+        ctx.closePath();
+        isDrawingRef.current = false;
+        setIsDrawing(false);
+        schedulePostDrawEvaluation();
       };
 
-      useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || !showCanvas || mode !== 'writing' || view !== 'quiz') return;
+      const handleCanvasTouchStart = (e, canvasIndex) => {
+        if (gradedRef.current || passRevealedRef.current) return;
+        e.preventDefault();
+        startDrawing(e, canvasIndex);
+      };
 
-        const onTouchStart = (e) => {
-          if (showAnswerRef.current && !writingRetryRef.current) return;
-          e.preventDefault();
-          startDrawing(e);
-        };
-        const onTouchMove = (e) => {
-          if (!isDrawingRef.current) return;
-          e.preventDefault();
-          draw(e);
-        };
-        const onTouchEnd = (e) => {
-          e.preventDefault();
-          stopDrawing();
-        };
+      const handleCanvasTouchMove = (e, canvasIndex) => {
+        if (!isDrawingRef.current) return;
+        e.preventDefault();
+        draw(e, canvasIndex);
+      };
 
-        canvas.addEventListener('touchstart', onTouchStart, { passive: false });
-        canvas.addEventListener('touchmove', onTouchMove, { passive: false });
-        canvas.addEventListener('touchend', onTouchEnd, { passive: false });
-        canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
-
-        return () => {
-          canvas.removeEventListener('touchstart', onTouchStart);
-          canvas.removeEventListener('touchmove', onTouchMove);
-          canvas.removeEventListener('touchend', onTouchEnd);
-          canvas.removeEventListener('touchcancel', onTouchEnd);
-        };
-      }, [showCanvas, mode, view, currentQuestion, showAnswer, writingRetry]);
+      const handleCanvasTouchEnd = (e, canvasIndex) => {
+        e.preventDefault();
+        stopDrawing(canvasIndex);
+      };
 
       useEffect(() => {
         if (!isDrawing) return;
@@ -561,40 +876,28 @@
         return () => { document.body.style.overflow = prevOverflow; };
       }, [isDrawing]);
 
-      const clearCanvas = () => {
-        if (showAnswer && !writingRetry) return;
-        initCanvas();
-      };
+      useEffect(() => () => cancelScheduledEvaluation(), []);
 
-      const handleShowAnswer = () => {
-        setShowAnswer(true);
-      };
-
-      const handleSelfGrade = (gradeResult) => {
-        setResult(gradeResult);
-        setHistory(prev => {
-          const currentData = prev[currentQuestion.id] || { missCount: 0 };
-          const newMissCount = gradeResult === 'incorrect' ? currentData.missCount + 1 : currentData.missCount;
-          const nextHistory = { 
-            ...prev, 
-            [currentQuestion.id]: { status: gradeResult, missCount: newMissCount } 
-          };
-          if (gradeResult === 'correct') {
-            setTimeout(() => moveToNextQuestion(nextHistory), 1000);
-          }
-          return nextHistory;
-        });
-
-        if (gradeResult === 'incorrect') {
-          setTimeout(() => {
-            setResult(null);
-            setWritingRetry(true);
-            setShowCanvas(true);
-          }, 1000);
+      const clearCanvasAt = async (index) => {
+        if (gradedRef.current || passRevealedRef.current) return;
+        cancelScheduledEvaluation();
+        evaluateGenerationRef.current++;
+        initCanvasAt(index);
+        if (!retryModeRef.current) {
+          setResult(null);
+          setWritingStatus('idle');
         }
+        await refreshJudgmentInfo();
       };
 
-      const handleRetryNext = () => {
+      const handlePass = () => {
+        if (gradedRef.current || passRevealedRef.current || !modelReady) return;
+        cancelScheduledEvaluation();
+        evaluateGenerationRef.current++;
+        evaluateHandwriting({ allowCorrect: true, allowIncorrect: true });
+      };
+
+      const handlePassNext = () => {
         moveToNextQuestion(history);
       };
 
@@ -827,6 +1130,8 @@
             .scrollbar-thin::-webkit-scrollbar { width: 5px; }
             .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9px; }
             .canvas-draw-area { touch-action: none; overscroll-behavior: contain; -webkit-user-select: none; user-select: none; }
+            .canvas-crosshair-v { position: absolute; left: 50%; top: 8%; height: 84%; border-left: 1px dashed #d1d5db; transform: translateX(-50%); pointer-events: none; }
+            .canvas-crosshair-h { position: absolute; top: 50%; left: 8%; width: 84%; border-top: 1px dashed #d1d5db; transform: translateY(-50%); pointer-events: none; }
           `}</style>
 
           <div className="w-full max-w-lg bg-white border border-gray-300 mt-2 md:mt-10 mb-10 relative overflow-hidden shadow-sm">
@@ -853,16 +1158,26 @@
                   <div className="p-6 md:p-10 flex flex-col items-center min-h-[500px] relative animate-fade-in">
                     {(() => {
                       const miss = getEffectiveMissCount(currentQuestion.id);
-                      return miss > 0 ? (
-                        <span className={`absolute bottom-4 right-4 md:bottom-6 md:right-6 z-20 text-[10px] font-bold px-2 py-1 rounded shadow-sm border pointer-events-none ${getMissBadgeClass(miss)}`}>
+                      if (miss <= 0) return null;
+                      const posClass = mode === 'reading'
+                        ? 'top-4 right-4 md:top-6 md:right-6'
+                        : 'bottom-4 right-4 md:bottom-6 md:right-6';
+                      return (
+                        <span className={`absolute ${posClass} z-20 text-[10px] font-bold px-2 py-1 rounded shadow-sm border pointer-events-none ${getMissBadgeClass(miss)}`}>
                           ミス {miss}回
                         </span>
-                      ) : null;
+                      );
                     })()}
 
-                    <p className="text-gray-500 text-sm mb-6 tracking-wide text-center">
-                      {mode === 'writing' ? '下線部のひらがなを漢字で書きなさい。' : '下線部の漢字の読みをひらがなで答えなさい。'}
-                    </p>
+                    {mode === 'reading' ? (
+                      <p className="text-gray-500 text-sm mb-6 tracking-wide text-center">
+                        下線部の漢字の読みをひらがなで答えなさい。
+                      </p>
+                    ) : (
+                      <p className="text-gray-500 text-sm mb-6 tracking-wide text-center">
+                        下線部のひらがなを漢字で書きなさい。
+                      </p>
+                    )}
 
                     {renderSentence()}
                     
@@ -875,7 +1190,7 @@
                     {mode === 'writing' ? (
                       <div className="w-full mb-4">
                         <div className="flex justify-between items-center gap-3 mb-2">
-                          {showCanvas && (!showAnswer || writingRetry) ? (
+                          {showCanvas && result !== 'correct' && !showPassAnswer ? (
                             <div className="flex items-center gap-2 flex-1 min-w-0">
                               <span className="text-xs text-gray-500 shrink-0 tracking-wide">太さ</span>
                               <input
@@ -898,28 +1213,93 @@
                           </button>
                         </div>
                         
-                        {writingRetry && (
-                          <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-2 text-center tracking-wide">
-                            正解の漢字を手書きエリアにもう一度書いてみましょう
-                          </p>
-                        )}
-
                         {showCanvas && (
-                          <div className="w-full relative animate-fade-in canvas-draw-area" ref={containerRef}>
-                            <div className={`border ${showAnswer && !writingRetry ? 'border-gray-200' : 'border-gray-400'}`}>
-                              <canvas
-                                ref={canvasRef}
-                                className={`block w-full bg-white ${showAnswer && !writingRetry ? 'opacity-50' : 'cursor-crosshair'}`}
-                                onMouseDown={startDrawing}
-                                onMouseMove={draw}
-                                onMouseUp={stopDrawing}
-                                onMouseLeave={stopDrawing}
-                              />
+                          <div className="w-full relative animate-fade-in canvas-draw-area">
+                            {!modelReady && !modelError && (
+                              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-2 text-center">
+                                漢字認識モデルを読み込み中…
+                              </p>
+                            )}
+                            {modelError && (
+                              <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2 mb-2 text-center">
+                                {modelError}
+                              </p>
+                            )}
+                            {judgmentInfo && (
+                              <div className="mb-3 text-center pointer-events-none">
+                                <p className="text-[10px] text-gray-400 tracking-wide mb-0.5">正解</p>
+                                <p className="text-lg font-bold text-gray-900 tracking-widest">
+                                  {judgmentInfo.targetKanji}
+                                  {judgmentInfo.yomi && (
+                                    <span className="text-sm font-normal text-gray-500 ml-1">（{judgmentInfo.yomi}）</span>
+                                  )}
+                                </p>
+                              </div>
+                            )}
+                            <div className={`grid gap-3 ${charSlots.length === 1 ? 'grid-cols-1' : charSlots.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                              {charSlots.map((char, index) => {
+                                const slot = judgmentInfo?.slots?.[index];
+                                const isSlotMatch = slot?.recognized === slot?.expected;
+                                return (
+                                  <div key={`${currentQuestion.id}-${index}`} className="flex flex-col">
+                                    <p className="text-[10px] text-gray-500 text-center mb-1 tracking-widest">
+                                      {index + 1}文字目
+                                    </p>
+                                    <div
+                                      ref={(el) => { containerRefs.current[index] = el; }}
+                                      className={`relative border overflow-hidden ${
+                                        result === 'correct' ? 'border-green-400'
+                                          : wrongSlotIndices.includes(index) ? 'border-red-400'
+                                          : result === 'incorrect' ? 'border-blue-400'
+                                          : 'border-gray-400'
+                                      }`}
+                                    >
+                                      <div className="absolute inset-0 z-[1] pointer-events-none">
+                                        <span className="canvas-crosshair-v" />
+                                        <span className="canvas-crosshair-h" />
+                                      </div>
+                                      <canvas
+                                        ref={(el) => { canvasRefs.current[index] = el; }}
+                                        className={`relative z-[2] block w-full aspect-square bg-white ${result === 'correct' ? 'opacity-70' : modelReady ? 'cursor-crosshair' : 'cursor-not-allowed opacity-60'}`}
+                                        onMouseDown={(e) => startDrawing(e, index)}
+                                        onMouseMove={(e) => draw(e, index)}
+                                        onMouseUp={() => stopDrawing(index)}
+                                        onMouseLeave={() => stopDrawing(index)}
+                                        onTouchStart={(e) => handleCanvasTouchStart(e, index)}
+                                        onTouchMove={(e) => handleCanvasTouchMove(e, index)}
+                                        onTouchEnd={(e) => handleCanvasTouchEnd(e, index)}
+                                        onTouchCancel={(e) => handleCanvasTouchEnd(e, index)}
+                                      />
+                                    </div>
+                                    <p className={`text-xs text-center mt-1.5 tracking-widest tabular-nums ${isSlotMatch ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
+                                      認識: {slot?.recognized ?? '—'}
+                                      {slot?.confidence != null && (
+                                        <span className="text-[10px] text-gray-500 ml-1">({slot.confidence}%)</span>
+                                      )}
+                                    </p>
+                                    {result !== 'correct' && !showPassAnswer && (
+                                      <button
+                                        type="button"
+                                        onClick={() => clearCanvasAt(index)}
+                                        disabled={!modelReady}
+                                        className="mt-1 w-full py-1.5 text-[11px] text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        書き直し
+                                      </button>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
-                            {(!showAnswer || writingRetry) && (
-                              <button onClick={clearCanvas} className="absolute -top-3 -right-3 p-2 bg-white border border-gray-300 text-gray-500 hover:text-gray-800 shadow-sm">
-                                <IconRefresh />
-                              </button>
+                            {retryMode && result === 'incorrect' && !showPassAnswer && (
+                              <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
+                                間違えた文字をもう一度書いてください。
+                              </p>
+                            )}
+                            {showPassAnswer && result === 'incorrect' && (
+                              <p className="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded px-3 py-2 mt-3 text-center tracking-wide">
+                                不正解です。正解は「{currentQuestion.kanji}」です。
+                              </p>
                             )}
                           </div>
                         )}
@@ -940,39 +1320,29 @@
                     )}
 
                     <div className="w-full mt-auto">
-                      {mode === 'writing' && !showAnswer && (
-                        <button onClick={handleShowAnswer} className="w-full py-4 bg-gray-900 text-white font-bold tracking-widest hover:bg-gray-800 shadow-md">
-                          正解を見る
-                        </button>
+                      {mode === 'writing' && showPassAnswer && result === 'incorrect' && (
+                        <div className="w-full animate-fade-in mb-4">
+                          <div className="text-center mb-4">
+                            <p className="text-sm text-gray-500 mb-1">正解</p>
+                            <p className="text-5xl font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
+                          </div>
+                          <button
+                            onClick={handlePassNext}
+                            className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3"
+                          >
+                            次の問題へ <IconArrowRight />
+                          </button>
+                        </div>
                       )}
 
-                      {mode === 'writing' && showAnswer && (
-                        <div className="w-full animate-fade-in">
-                          {writingRetry ? (
-                            <>
-                              <div className="text-center mb-4">
-                                <p className="text-sm text-gray-500 mb-1">正解</p>
-                                <p className="text-5xl font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
-                              </div>
-                              <button onClick={handleRetryNext} className="w-full py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold tracking-widest flex items-center justify-center gap-3">
-                                次の問題へ <IconArrowRight />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <div className="text-center mb-6">
-                                <p className="text-sm text-gray-500 mb-1">正解</p>
-                                <p className="text-5xl font-bold tracking-widest text-gray-900">{currentQuestion.kanji}</p>
-                              </div>
-                              {!result && (
-                                <div className="flex gap-4 w-full">
-                                  <button onClick={() => handleSelfGrade('incorrect')} className="flex-1 py-4 bg-white border-2 border-gray-300 text-gray-600 font-bold tracking-widest flex items-center justify-center gap-2"><IconX /> 間違えた</button>
-                                  <button onClick={() => handleSelfGrade('correct')} className="flex-1 py-4 bg-gray-900 border-2 border-gray-900 text-white font-bold tracking-widest flex items-center justify-center gap-2 shadow-md"><IconCheck /> 正解できた</button>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
+                      {mode === 'writing' && result !== 'correct' && !showPassAnswer && (
+                        <button
+                          onClick={handlePass}
+                          disabled={!modelReady}
+                          className="w-full py-4 bg-white border-2 border-gray-300 text-gray-600 font-bold tracking-widest hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {retryMode ? '答えを見て次へ' : 'パス'}
+                        </button>
                       )}
 
                       {mode === 'reading' && !showAnswer && (
