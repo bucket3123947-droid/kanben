@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="app-build" content="reading-sentence-fix">
+  <meta name="app-build" content="reading-target-unified">
   <title>漢字練習</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -238,68 +238,91 @@
       { kanji: '体系', yomi: 'たいけい', sentence: '知識を{target}化する。' }
     ];
 
+    // 読み問題: kanji = {target} に入る語（漢字・送り仮名まとめ）、yomi = その読み
     const midTermReadingRaw = [
       { kanji: '所作', yomi: ['しょさ'], sentence: '美しい{target}を身につける。' },
-      { kanji: '工面', yomi: ['くめん'], sentence: '旅行の費用を{target}する。' },
-      { kanji: '委', yomi: ['ゆだねる'], sentence: '最終的な判断を専門家に{target}ねる。' },
+      { kanji: '工面する', yomi: ['くめん'], sentence: '旅行の費用を{target}。' },
+      { kanji: '委ねる', yomi: ['ゆだねる'], sentence: '最終的な判断を専門家に{target}。' },
       { kanji: '都度', yomi: ['つど'], sentence: '問題が起きる{target}対応する。' },
-      { kanji: '育', yomi: ['はぐくむ'], sentence: '子どもたちの豊かな心を{target}む。' },
+      { kanji: '育む', yomi: ['はぐくむ'], sentence: '子どもたちの豊かな心を{target}。' },
       { kanji: '由来', yomi: ['ゆらい'], sentence: '地名の{target}を調べる。' },
       { kanji: '気配', yomi: ['けはい'], sentence: '朝夕に秋の{target}を感じる。' },
       { kanji: '画一', yomi: ['かくいつ'], sentence: '{target}的な詰め込み教育。' },
-      { kanji: '毛頭', yomi: ['もうとう'], sentence: '彼に謝る気は{target}ない。' },
+      { kanji: '毛頭ない', yomi: ['もうとう'], sentence: '彼に謝る気は{target}。' },
       { kanji: '所行', yomi: ['しょぎょう'], sentence: '悪魔の{target}とは思えない。' },
       { kanji: '定石', yomi: ['じょうせき'], sentence: '囲碁の{target}を覚える。' },
       { kanji: '門戸', yomi: ['もんこ'], sentence: '広く世界に{target}を開く。' },
       { kanji: '形相', yomi: ['ぎょうそう'], sentence: '恐ろしい{target}で睨みつける。' },
       { kanji: '食指', yomi: ['しょくし'], sentence: 'その条件では{target}が動かない。' },
       { kanji: '直筆', yomi: ['じきひつ'], sentence: '作家の{target}の原稿が発見された。' },
-      { kanji: '半', yomi: ['なかば'], sentence: 'プロジェクトは{target}ばで頓挫した。' },
+      { kanji: '半ば', yomi: ['なかば'], sentence: 'プロジェクトは{target}で頓挫した。' },
       { kanji: '間近', yomi: ['まぢか'], sentence: '試験が{target}に迫っている。' },
-      { kanji: '反', yomi: ['そらす'], sentence: '気まずくなって目を{target}らす。' },
+      { kanji: '反らす', yomi: ['そらす'], sentence: '気まずくなって目を{target}。' },
       { kanji: '世間', yomi: ['せけん'], sentence: '{target}の注目を集める事件。' },
-      { kanji: '直', yomi: ['ただちに'], sentence: '異常があれば{target}ちに報告しなさい。' },
-      { kanji: '唱', yomi: ['となえる'], sentence: '新しい学説を{target}える。' },
+      { kanji: '直ちに', yomi: ['ただちに'], sentence: '異常があれば{target}報告しなさい。' },
+      { kanji: '唱える', yomi: ['となえる'], sentence: '新しい学説を{target}。' },
       { kanji: '必定', yomi: ['ひつじょう'], sentence: '失敗するのは{target}だ。' },
       { kanji: '山積', yomi: ['さんせき', 'やまづみ'], sentence: '解決すべき課題が{target}している。' },
-      { kanji: '浴', yomi: ['あびる'], sentence: '世間の非難を{target}びる。' },
-      { kanji: '内省', yomi: ['ないせい'], sentence: '自らの行動を深く{target}する。' },
+      { kanji: '浴びる', yomi: ['あびる'], sentence: '世間の非難を{target}。' },
+      { kanji: '内省する', yomi: ['ないせい'], sentence: '自らの行動を深く{target}。' },
       { kanji: '天然', yomi: ['てんねん'], sentence: '{target}の素材を生かす。' },
       { kanji: '試練', yomi: ['しれん'], sentence: '厳しい{target}を乗り越える。' },
       { kanji: '方便', yomi: ['ほうべん'], sentence: '嘘も{target}だ。' },
-      { kanji: '参画', yomi: ['さんかく'], sentence: 'プロジェクトに{target}する。' },
+      { kanji: '参画する', yomi: ['さんかく'], sentence: 'プロジェクトに{target}。' },
       { kanji: '昨今', yomi: ['さっこん'], sentence: '{target}の社会情勢を語る。' },
-      { kanji: '省', yomi: ['はぶく'], sentence: '無駄な手間を{target}く。' },
-      { kanji: '健', yomi: ['すこやか'], sentence: '子どもが{target}やかに育つ。' },
-      { kanji: '司', yomi: ['つかさどる'], sentence: '政治を{target}る機関。' },
+      { kanji: '省く', yomi: ['はぶく'], sentence: '無駄な手間を{target}。' },
+      { kanji: '健やか', yomi: ['すこやか'], sentence: '子どもが{target}に育つ。' },
+      { kanji: '司る', yomi: ['つかさどる'], sentence: '政治を{target}機関。' },
       { kanji: '末期', yomi: ['まつご'], sentence: '{target}の水を口に含む。' },
       { kanji: '束', yomi: ['たば'], sentence: '紙の{target}を抱える。' },
       { kanji: '口伝', yomi: ['くでん'], sentence: '奥義を{target}で教える。' },
-      { kanji: '連', yomi: ['つらなり'], sentence: '山々の{target}なりが見える。' },
-      { kanji: '刷', yomi: ['する'], sentence: '年賀状を{target}る。' },
+      { kanji: '連なり', yomi: ['つらなり'], sentence: '山々の{target}が見える。' },
+      { kanji: '刷る', yomi: ['する'], sentence: '年賀状を{target}。' },
       { kanji: '建前', yomi: ['たてまえ'], sentence: '本音と{target}を使い分ける。' },
-      { kanji: '養生', yomi: ['ようじょう'], sentence: '病気のために{target}する。' },
+      { kanji: '養生する', yomi: ['ようじょう'], sentence: '病気のために{target}。' },
       { kanji: '無造作', yomi: ['むぞうさ'], sentence: '髪を{target}に束ねる。' },
       { kanji: '感興', yomi: ['かんきょう'], sentence: '{target}が湧いてくる。' },
       { kanji: '因習', yomi: ['いんしゅう'], sentence: '古い{target}を打破する。' },
-      { kanji: '営', yomi: ['いとなみ'], sentence: '人間の日々の{target}み。' },
-      { kanji: '設', yomi: ['もうける'], sentence: '相談窓口を{target}ける。' },
+      { kanji: '営み', yomi: ['いとなみ'], sentence: '人間の日々の{target}。' },
+      { kanji: '設ける', yomi: ['もうける'], sentence: '相談窓口を{target}。' },
       { kanji: '代謝', yomi: ['たいしゃ'], sentence: '新陳{target}を促す。' },
       { kanji: '不易', yomi: ['ふえき'], sentence: '{target}流行の精神。' },
-      { kanji: '確固', yomi: ['かっこたる'], sentence: '{target}たる信念を持つ。' },
+      { kanji: '確固たる', yomi: ['かっこたる'], sentence: '{target}信念を持つ。' },
       { kanji: '息災', yomi: ['そくさい'], sentence: '無病{target}を祈る。' },
       { kanji: '保身', yomi: ['ほしん'], sentence: '{target}を図る言い訳。' },
       { kanji: '便益', yomi: ['べんえき'], sentence: '社会的な{target}をもたらす。' },
-      { kanji: '名状', yomi: ['めいじょう'], sentence: '{target}しがたい美しさ。' },
+      { kanji: '名状しがたい', yomi: ['めいじょう'], sentence: '{target}の美しさ。' },
       { kanji: '挙句', yomi: ['あげく'], sentence: 'さんざん迷った{target}に決めた。' },
       { kanji: '過言', yomi: ['かごん'], sentence: '天才と言っても{target}ではない。' },
-      { kanji: '快', yomi: ['こころよく'], sentence: '依頼を{target}く引き受ける。' },
+      { kanji: '快く', yomi: ['こころよく'], sentence: '依頼を{target}引き受ける。' },
       { kanji: '重複', yomi: ['ちょうふく', 'じゅうふく'], sentence: '内容が{target}している。' },
-      { kanji: '招集', yomi: ['しょうしゅう'], sentence: '国会を{target}する。' },
+      { kanji: '招集する', yomi: ['しょうしゅう'], sentence: '国会を{target}。' },
       { kanji: '世故', yomi: ['せこ'], sentence: '{target}に長けた人物。' },
-      { kanji: '至極', yomi: ['しごく'], sentence: '{target}当然の報いだ。' }
+      { kanji: '至極', yomi: ['しごく'], sentence: '{target}当然の報いだ。' },
     ];
 
+    const final1ReadingRaw = [
+      { kanji: '従順', yomi: ['じゅうじゅん'], sentence: '{target}な態度を保つ。' },
+      { kanji: '順応する', yomi: ['じゅんおう'], sentence: '環境に{target}。' },
+      { kanji: '創出する', yomi: ['そうしゅつ'], sentence: '新価値を{target}。' },
+      { kanji: '重宝がい', yomi: ['ちょうほう'], sentence: '{target}の品。' },
+      { kanji: '臨む', yomi: ['のぞむ'], sentence: '危機に{target}。' },
+      { kanji: '類推する', yomi: ['るいすい'], sentence: '事例から{target}。' },
+      { kanji: '背反する', yomi: ['はいはん'], sentence: '原則と{target}。' },
+      { kanji: '呼応する', yomi: ['こおう'], sentence: '要求に{target}。' },
+      { kanji: '早晩', yomi: ['そうばん'], sentence: '{target}知れる結果。' },
+      { kanji: '机上', yomi: ['きじょう'], sentence: '{target}の空論。' },
+      { kanji: '閉口する', yomi: ['へいこう'], sentence: '理不尽に{target}。' },
+      { kanji: '簡便', yomi: ['かんべん'], sentence: '{target}な方法。' },
+      { kanji: '専横', yomi: ['せんおう'], sentence: '{target}な態度。' },
+      { kanji: '収まった', yomi: ['おさまる'], sentence: '騒ぎが{target}。' },
+      { kanji: '頂', yomi: ['いただき'], sentence: '山の{target}に立つ。' },
+      { kanji: '備忘録', yomi: ['びぼう'], sentence: '{target}を残す。' },
+      { kanji: '養蚕', yomi: ['ようさん'], sentence: '{target}業が盛んだった。' },
+      { kanji: '窓外', yomi: ['そうがい'], sentence: '事務所の{target}に出る。' },
+      { kanji: '供する', yomi: ['ともする'], sentence: '神に{target}。' },
+      { kanji: '障子', yomi: ['しょうじ'], sentence: '紙の{target}を張る。' },
+    ];
     const final1WritingRaw = [
       { kanji: '示唆', yomi: 'しさつ', sentence: '新しい考えを{target}する。' },
       { kanji: '浸透', yomi: 'しんとう', sentence: '雨が土壌に{target}する。' },
@@ -458,9 +481,6 @@
     const HANDWRITING_MIN_INK_PIXELS = 40;
 
     const splitKanjiChars = (text) => Array.from(text || '');
-
-    /** 読み問題：下線部は {target} に入る漢字のみ（直後の送り仮名は文中に残す） */
-    const getReadingTargetDisplay = (question) => question?.kanji ?? '';
 
     const KanjiRecognizer = (() => {
       let model = null;
@@ -1263,7 +1283,7 @@
         const parts = currentQuestion.sentence.split('{target}');
         const targetText = mode === 'writing'
           ? getDisplayYomi(currentQuestion)
-          : getReadingTargetDisplay(currentQuestion);
+          : currentQuestion.kanji;
         
         return (
           <div className="text-xl md:text-2xl tracking-widest mb-8 text-center text-gray-800 leading-relaxed animate-fade-in">
